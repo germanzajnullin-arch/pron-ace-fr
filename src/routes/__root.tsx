@@ -119,10 +119,34 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <OnboardingGate />
+    </QueryClientProvider>
+  );
+}
+
+function OnboardingGate() {
+  const router = useRouter();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { profile, session, loading } = useProfile();
+
+  const isPublic = pathname === "/auth" || pathname === "/onboarding";
+  const needsOnboarding = !!session && !!profile && !profile.onboarding_completed;
+
+  useEffect(() => {
+    if (loading) return;
+    if (needsOnboarding && !isPublic) {
+      router.navigate({ to: "/onboarding" });
+    }
+  }, [loading, needsOnboarding, isPublic, router]);
+
+  const hideChrome = pathname === "/onboarding" || pathname === "/auth";
+
+  return (
+    <>
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-background pb-24">
         <Outlet />
       </div>
-      <BottomTabBar />
-    </QueryClientProvider>
+      {!hideChrome && <BottomTabBar />}
+    </>
   );
 }
