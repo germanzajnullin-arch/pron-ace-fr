@@ -282,7 +282,7 @@ function OnboardingPage() {
 
       {step === 4 && (
         <StepScreen eyebrow="Commitment" title="Choose your daily target">
-          <div className="space-y-3">
+          <div className="-mx-5 space-y-3">
             {TARGETS.map((o) => (
               <ChoiceCard
                 key={o.value}
@@ -292,6 +292,7 @@ function OnboardingPage() {
                 emoji={o.emoji}
                 hint={o.hint}
                 wide
+                size="lg"
               />
             ))}
           </div>
@@ -376,6 +377,7 @@ function ChoiceCard({
   emoji,
   hint,
   wide,
+  size = "default",
 }: {
   selected: boolean;
   onClick: () => void;
@@ -383,31 +385,50 @@ function ChoiceCard({
   emoji?: string;
   hint?: string;
   wide?: boolean;
+  size?: "default" | "lg";
 }) {
+  const isLarge = size === "lg";
   return (
     <button
       type="button"
       onClick={onClick}
       className={cn(
-        "group relative flex items-center gap-3 rounded-2xl border p-4 text-left transition-all duration-300",
+        "group relative flex w-full items-center gap-3 rounded-2xl border text-left transition-all duration-300",
         selected
           ? "border-primary bg-primary/10 shadow-neon"
           : "border-border bg-surface hover:bg-surface-2",
-        wide && "min-h-[68px]",
+        isLarge ? "min-h-[88px] px-6 py-5" : "p-4",
+        wide && !isLarge && "min-h-[68px]",
       )}
     >
       {emoji && (
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-background text-xl">
+        <span
+          className={cn(
+            "flex shrink-0 items-center justify-center rounded-xl bg-background",
+            isLarge ? "h-14 w-14 text-3xl" : "h-11 w-11 text-xl",
+          )}
+        >
           {emoji}
         </span>
       )}
       <span className="flex-1">
-        <span className="block font-semibold leading-tight">{label}</span>
-        {hint && <span className="mt-0.5 block text-xs text-muted-foreground">{hint}</span>}
+        <span className={cn("block font-semibold leading-tight", isLarge && "text-lg")}>
+          {label}
+        </span>
+        {hint && (
+          <span className={cn("block text-muted-foreground", isLarge ? "mt-1 text-sm" : "mt-0.5 text-xs")}>
+            {hint}
+          </span>
+        )}
       </span>
       {selected && (
-        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-background">
-          <Check className="h-3.5 w-3.5" />
+        <span
+          className={cn(
+            "flex shrink-0 items-center justify-center rounded-full bg-primary text-background",
+            isLarge ? "h-8 w-8" : "h-6 w-6",
+          )}
+        >
+          <Check className={cn(isLarge ? "h-4 w-4" : "h-3.5 w-3.5")} />
         </span>
       )}
     </button>
