@@ -42,13 +42,16 @@ function DailyFocusPage() {
 
   return (
     <main className="flex-1 px-4 pt-8 pb-6 space-y-6">
-      <header className="space-y-1">
-        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-          Daily Focus
-        </p>
-        <h1 className="text-3xl font-bold">
-          Bonne journée <span className="text-gradient-neon">✨</span>
-        </h1>
+      <header className="flex items-start justify-between gap-3">
+        <div className="space-y-1">
+          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+            Daily Focus
+          </p>
+          <h1 className="text-3xl font-bold">
+            Bonne journée <span className="text-gradient-neon">✨</span>
+          </h1>
+        </div>
+        <ThemeSwitcher className="mt-1 shrink-0" />
       </header>
 
       <DailyChallengeCard topic={topic} />
