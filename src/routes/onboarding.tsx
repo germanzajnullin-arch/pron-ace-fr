@@ -331,7 +331,7 @@ function OnboardingPage() {
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <>
-                {step === 4 ? "Finish" : "Next"}
+                {step === 4 ? "кноFinish" : "Next"}
                 <ChevronRight className="h-4 w-4" />
               </>
             )}
