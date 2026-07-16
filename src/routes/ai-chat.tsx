@@ -1,10 +1,11 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, Mic, Send, Square } from "lucide-react";
 import { useRecorder } from "@/hooks/useRecorder";
 import { MicPermissionAlert } from "@/components/feedback/MicPermissionAlert";
 import { APP_NAME } from "@/config/constants";
 import { DAILY_FOCUS } from "@/config/dailyFocus";
+import { usePersonalization, GOAL_AI_OPENER } from "@/lib/personalization";
 import { cn } from "@/lib/utils";
 import { createLogger } from "@/services/logger";
 
