@@ -152,12 +152,7 @@ function OnboardingGate() {
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-background pb-24">
         <Outlet />
       </div>
-      {!hideChrome && (
-        <>
-          <ThemePicker />
-          <BottomTabBar />
-        </>
-      )}
+      {!hideChrome && <BottomTabBar />}
     </>
   );
 }
