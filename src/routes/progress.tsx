@@ -1,10 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
-import { Flame, Target, Clock } from "lucide-react";
+import { Flame, Target, Clock, RotateCcw } from "lucide-react";
 import { APP_NAME } from "@/config/constants";
 import { MOCK_RECENT_ATTEMPTS } from "@/config/mockData";
 import { ProgressBar } from "@/components/progress/ProgressBar";
 import { useProfile } from "@/hooks/useProfile";
+import { resetOnboarding } from "@/lib/onboarding";
 
 export const Route = createFileRoute("/progress")({
   head: () => ({
