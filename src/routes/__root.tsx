@@ -136,8 +136,22 @@ function OnboardingGate() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { profile, session, loading } = useProfile();
 
+  // Read localStorage after mount (SSR-safe) and stay in sync across tabs.
+  const [localCompleted, setLocalCompleted] = useState<boolean>(true);
+  useEffect(() => {
+    setLocalCompleted(isOnboardingCompleted());
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === ONBOARDING_STORAGE_KEY) {
+        setLocalCompleted(isOnboardingCompleted());
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, [pathname]);
+
   const isPublic = pathname === "/auth" || pathname === "/onboarding";
-  const needsOnboarding = !!session && !!profile && !profile.onboarding_completed;
+  const dbNeedsOnboarding = !!session && !!profile && !profile.onboarding_completed;
+  const needsOnboarding = !localCompleted || dbNeedsOnboarding;
 
   useEffect(() => {
     if (loading) return;
