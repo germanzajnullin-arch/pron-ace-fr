@@ -1,7 +1,7 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+import { ArrowLeft, ArrowRight, X } from "lucide-react";
 import { getLessonById, listLessonsByCategory } from "@/lib/lessons.functions";
 import { saveAttempt } from "@/lib/attempts.functions";
 import { useServerFn } from "@tanstack/react-start";
