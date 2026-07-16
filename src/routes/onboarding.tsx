@@ -77,6 +77,7 @@ function OnboardingPage() {
     if (!session) {
       router.navigate({ to: "/auth" });
     } else if (profile?.onboarding_completed) {
+      setOnboardingCompleted(true);
       router.navigate({ to: "/daily-focus" });
     }
   }, [loading, session, profile, router]);
