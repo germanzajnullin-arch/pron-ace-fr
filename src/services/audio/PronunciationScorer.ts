@@ -1,6 +1,6 @@
 import { SCORING } from "@/config/constants";
 import { createLogger } from "@/services/logger";
-import type { DiffChunk, ScoreBreakdown } from "./types";
+import type { DiffChunk, PronunciationMetrics, ScoreBreakdown } from "./types";
 
 const log = createLogger("PronunciationScorer");
 
@@ -56,48 +56,116 @@ const bucketFor = (score: number): ScoreBreakdown["bucket"] => {
   return "retry";
 };
 
-const messageFor = (bucket: ScoreBreakdown["bucket"]): string => {
+const messageFor = (
+  bucket: ScoreBreakdown["bucket"],
+  metrics: PronunciationMetrics,
+): string => {
+  const weakest = weakestMetric(metrics);
+  const weakLabel: Record<keyof PronunciationMetrics, string> = {
+    overall: "overall pronunciation",
+    accuracy: "phoneme accuracy",
+    fluency: "rhythm & liaisons",
+    completeness: "reading the full phrase",
+  };
   switch (bucket) {
     case "excellent":
       return "Excellent ! Native-level clarity.";
     case "good":
-      return "Bien joué — a couple of small tweaks and it's perfect.";
+      return `Bien joué — polish the ${weakLabel[weakest]}.`;
     case "fair":
-      return "Not bad. Focus on the highlighted words.";
+      return `Not bad. Focus on ${weakLabel[weakest]}.`;
     case "retry":
-      return "Let's try again — listen to the example first.";
+      return "Let's try again — slow down and listen to the example first.";
   }
 };
 
+const weakestMetric = (m: PronunciationMetrics): keyof PronunciationMetrics => {
+  const entries: [keyof PronunciationMetrics, number][] = [
+    ["accuracy", m.accuracy],
+    ["fluency", m.fluency],
+    ["completeness", m.completeness],
+  ];
+  entries.sort((a, b) => a[1] - b[1]);
+  return entries[0][0];
+};
+
+const clamp01 = (n: number): number => Math.max(0, Math.min(1, Number(n.toFixed(3))));
+
+export interface ComputeMetricsInput {
+  expected: string;
+  heard: string;
+  /** Recording duration in ms. Used for the fluency proxy. */
+  durationMs: number;
+}
+
 /**
- * Compute a 0..1 pronunciation score by character-level distance on the
- * normalized transcripts, plus a word-level diff for the UI.
+ * Compute all four metrics from the transcript + timing.
+ * Deterministic — no I/O — so it runs identically on server and client.
+ *
+ * - Accuracy: 1 − charLevenshtein/maxLen on normalized strings.
+ * - Completeness: matched expected words / expected words.
+ * - Fluency: penalty as heard-tempo diverges from expected French tempo
+ *   (~2.5 words/sec at natural speed), floored by accuracy so a wrong
+ *   utterance can't score "fluent".
  */
-export const scorePronunciation = (
-  expected: string,
-  heard: string,
-): ScoreBreakdown => {
+export const computePronunciationMetrics = ({
+  expected,
+  heard,
+  durationMs,
+}: ComputeMetricsInput): ScoreBreakdown => {
   const normExpected = normalize(expected);
   const normHeard = normalize(heard);
 
   if (!normExpected) {
     return {
       score: 0,
+      overall: 0,
+      accuracy: 0,
+      fluency: 0,
+      completeness: 0,
       bucket: "retry",
       message: "Nothing to compare against.",
       diff: [],
     };
   }
 
+  const expectedWords = normExpected.split(" ").filter(Boolean);
+  const heardWords = normHeard.split(" ").filter(Boolean);
+  const heardSet = new Set(heardWords);
+
+  // Accuracy — character-level distance
   const distance = levenshtein(normExpected, normHeard);
   const maxLen = Math.max(normExpected.length, normHeard.length, 1);
-  const rawScore = 1 - distance / maxLen;
-  const score = Math.max(0, Math.min(1, Number(rawScore.toFixed(3))));
+  const accuracy = clamp01(1 - distance / maxLen);
 
-  const diff = wordDiff(normExpected.split(" "), normHeard.split(" "));
-  const bucket = bucketFor(score);
+  // Completeness — expected words present in the transcript
+  const matched = expectedWords.filter((w) => heardSet.has(w)).length;
+  const completeness = clamp01(expectedWords.length === 0 ? 0 : matched / expectedWords.length);
 
-  log.info("scored", { expected: normExpected, heard: normHeard, score, bucket });
+  // Fluency — closeness of tempo to natural French cadence (2.5 wps)
+  const seconds = Math.max(durationMs, 500) / 1000;
+  const wps = heardWords.length / seconds;
+  const target = 2.5;
+  const tempoFit = Math.max(0, 1 - Math.abs(wps - target) / target);
+  // Prevent nonsense words from scoring fluent
+  const fluency = clamp01(tempoFit * (0.35 + 0.65 * accuracy));
 
-  return { score, bucket, message: messageFor(bucket), diff };
+  const overall = clamp01(0.55 * accuracy + 0.25 * fluency + 0.2 * completeness);
+  const bucket = bucketFor(overall);
+  const diff = wordDiff(expectedWords, heardWords);
+  const metrics: PronunciationMetrics = { overall, accuracy, fluency, completeness };
+
+  log.info("scored", { expected: normExpected, heard: normHeard, ...metrics, bucket });
+
+  return {
+    score: overall,
+    ...metrics,
+    bucket,
+    message: messageFor(bucket, metrics),
+    diff,
+  };
 };
+
+/** Back-compat alias used by older call sites. */
+export const scorePronunciation = (expected: string, heard: string): ScoreBreakdown =>
+  computePronunciationMetrics({ expected, heard, durationMs: 2000 });
