@@ -322,6 +322,9 @@ function TodaysPhraseCard({
             expectedText: french,
             transcript: result.transcript,
             score: score.score,
+            accuracyScore: score.accuracy,
+            fluencyScore: score.fluency,
+            completenessScore: score.completeness,
             durationMs: result.durationMs,
             createdAt: new Date().toISOString(),
           });
