@@ -1,9 +1,11 @@
 import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, X } from "lucide-react";
+import { toast } from "sonner";
 import { getLessonById, listLessonsByCategory } from "@/lib/lessons.functions";
 import { saveAttempt } from "@/lib/attempts.functions";
+import { pushGuestAttempt } from "@/lib/guest-attempts";
 import { useServerFn } from "@tanstack/react-start";
 import { toLesson } from "@/types/lesson";
 import { useRecorder } from "@/hooks/useRecorder";
