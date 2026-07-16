@@ -94,9 +94,12 @@ export type Database = {
       }
       user_attempts: {
         Row: {
+          accuracy_score: number | null
+          completeness_score: number | null
           created_at: string
           duration_ms: number | null
           expected_text: string
+          fluency_score: number | null
           id: string
           lesson_id: string | null
           score: number
@@ -104,9 +107,12 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          accuracy_score?: number | null
+          completeness_score?: number | null
           created_at?: string
           duration_ms?: number | null
           expected_text: string
+          fluency_score?: number | null
           id?: string
           lesson_id?: string | null
           score: number
@@ -114,9 +120,12 @@ export type Database = {
           user_id: string
         }
         Update: {
+          accuracy_score?: number | null
+          completeness_score?: number | null
           created_at?: string
           duration_ms?: number | null
           expected_text?: string
+          fluency_score?: number | null
           id?: string
           lesson_id?: string | null
           score?: number
