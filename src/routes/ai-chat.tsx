@@ -50,6 +50,7 @@ const OPENERS: readonly string[] = [
 
 function AiChatPage() {
   const router = useRouter();
+  const search = Route.useSearch();
   const [messages, setMessages] = useState<ChatMessage[]>(() => [
     {
       id: "opener",
@@ -60,6 +61,7 @@ function AiChatPage() {
   const [pending, setPending] = useState(false);
   const [draft, setDraft] = useState("");
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const autoLaunchedRef = useRef(false);
 
   const recorder = useRecorder({
     expectedText: "",
