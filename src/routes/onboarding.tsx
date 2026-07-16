@@ -10,6 +10,7 @@ import {
 } from "@/hooks/useProfile";
 import { APP_NAME } from "@/config/constants";
 import { cn } from "@/lib/utils";
+import { setOnboardingCompleted } from "@/lib/onboarding";
 
 export const Route = createFileRoute("/onboarding")({
   head: () => ({ meta: [{ title: `Get started — ${APP_NAME}` }] }),
@@ -76,6 +77,7 @@ function OnboardingPage() {
     if (!session) {
       router.navigate({ to: "/auth" });
     } else if (profile?.onboarding_completed) {
+      setOnboardingCompleted(true);
       router.navigate({ to: "/daily-focus" });
     }
   }, [loading, session, profile, router]);
@@ -130,6 +132,7 @@ function OnboardingPage() {
       setSubmitting(false);
       return;
     }
+    setOnboardingCompleted(true);
     await refetch();
     router.navigate({ to: "/daily-focus" });
   };
