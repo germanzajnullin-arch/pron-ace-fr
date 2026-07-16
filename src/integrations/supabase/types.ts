@@ -56,6 +56,7 @@ export type Database = {
           created_at: string
           daily_goal_minutes: number
           display_name: string | null
+          french_level: string
           goal: string | null
           id: string
           onboarding_completed: boolean
@@ -68,6 +69,7 @@ export type Database = {
           created_at?: string
           daily_goal_minutes?: number
           display_name?: string | null
+          french_level?: string
           goal?: string | null
           id: string
           onboarding_completed?: boolean
@@ -80,6 +82,7 @@ export type Database = {
           created_at?: string
           daily_goal_minutes?: number
           display_name?: string | null
+          french_level?: string
           goal?: string | null
           id?: string
           onboarding_completed?: boolean
