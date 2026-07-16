@@ -7,6 +7,7 @@ import {
   type OnboardingAnswers,
 } from "@/lib/personalization";
 import { setOnboardingCompleted, isOnboardingCompleted } from "@/lib/onboarding";
+import { readGuestAttempts, clearGuestAttempts } from "@/lib/guest-attempts";
 import { createLogger } from "@/services/logger";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -75,6 +76,29 @@ export const useAnswersSync = (): void => {
           window.localStorage.removeItem(ONBOARDING_ANSWERS_KEY);
         } catch {
           /* noop */
+        }
+
+        // Flush any guest attempts cached on this device into user_attempts.
+        const pending = readGuestAttempts();
+        if (pending.length > 0) {
+          const { error: attemptsError } = await supabase
+            .from("user_attempts")
+            .insert(
+              pending.map((a) => ({
+                user_id: userId,
+                lesson_id: a.lessonId,
+                expected_text: a.expectedText,
+                transcript: a.transcript,
+                score: a.score,
+                duration_ms: a.durationMs,
+              })),
+            );
+          if (attemptsError) {
+            log.error("failed to migrate guest attempts", attemptsError);
+          } else {
+            clearGuestAttempts();
+            log.info("migrated guest attempts", { count: pending.length });
+          }
         }
       } catch (err) {
         log.error("failed to sync onboarding answers", err);

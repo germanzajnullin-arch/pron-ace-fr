@@ -13,10 +13,11 @@ import { useEffect, useState, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { BottomTabBar } from "@/components/nav/BottomTabBar";
+import { Toaster } from "@/components/ui/sonner";
 import { APP_NAME } from "@/config/constants";
 import { useProfile } from "@/hooks/useProfile";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import { isOnboardingCompleted, ONBOARDING_STORAGE_KEY } from "@/lib/onboarding";
+import { isOnboardingCompleted, setOnboardingCompleted, ONBOARDING_STORAGE_KEY } from "@/lib/onboarding";
 import { useAnswersSync } from "@/hooks/useAnswersSync";
 
 
@@ -158,9 +159,13 @@ function OnboardingGate() {
 
   useEffect(() => {
     if (loading) return;
-    if (!localCompleted && !!session && !!profile && profile.onboarding_completed) {
-      // Signed-in user with a completed DB flag: mirror it locally.
-      // (The useEffect in onboarding.tsx also handles this on that route.)
+    // Signed-in user with completed onboarding in DB → mirror locally so the
+    // gate doesn't force them back through the quiz on a clean browser.
+    if (!!session && !!profile && profile.onboarding_completed) {
+      if (!localCompleted) {
+        setOnboardingCompleted(true);
+        setLocalCompleted(true);
+      }
       return;
     }
     if (needsOnboarding && !isPublic) {
@@ -176,6 +181,7 @@ function OnboardingGate() {
         <Outlet />
       </div>
       {!hideChrome && <BottomTabBar />}
+      <Toaster position="top-center" richColors closeButton />
     </>
   );
 }

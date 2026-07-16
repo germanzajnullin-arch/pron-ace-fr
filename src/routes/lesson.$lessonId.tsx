@@ -1,9 +1,11 @@
 import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, X } from "lucide-react";
+import { toast } from "sonner";
 import { getLessonById, listLessonsByCategory } from "@/lib/lessons.functions";
 import { saveAttempt } from "@/lib/attempts.functions";
+import { pushGuestAttempt } from "@/lib/guest-attempts";
 import { useServerFn } from "@tanstack/react-start";
 import { toLesson } from "@/types/lesson";
 import { useRecorder } from "@/hooks/useRecorder";
@@ -33,6 +35,7 @@ function LessonPage() {
   const { session } = useAuthSession();
   const save = useServerFn(saveAttempt);
   const [savedNote, setSavedNote] = useState<string | null>(null);
+  const guestPromptShown = useRef(false);
 
   const { data: lessonRow, isLoading } = useQuery({
     queryKey: ["lesson", lessonId],
@@ -68,9 +71,33 @@ function LessonPage() {
   const recorder = useRecorder({
     expectedText: lesson?.frenchText ?? "",
     onScored: async (result, score) => {
-      if (!session || !lesson) {
-        log.info("skipping save (no session or lesson)");
-        setSavedNote(session ? null : "Sign in to save attempts to your history.");
+      if (!lesson) return;
+      if (!session) {
+        // Guest: keep the last few attempts locally and nudge sign-in once.
+        try {
+          pushGuestAttempt({
+            lessonId: lesson.id,
+            expectedText: lesson.frenchText,
+            transcript: result.transcript,
+            score: score.score,
+            durationMs: result.durationMs,
+            createdAt: new Date().toISOString(),
+          });
+        } catch (err) {
+          log.error("guest cache failed", err);
+        }
+        setSavedNote("Saved locally on this device.");
+        if (!guestPromptShown.current) {
+          guestPromptShown.current = true;
+          toast("Great job!", {
+            description:
+              "Sign in now to save your progress and unlock advanced analytics.",
+            action: {
+              label: "Sign in",
+              onClick: () => void navigate({ to: "/auth" }),
+            },
+          });
+        }
         return;
       }
       try {
