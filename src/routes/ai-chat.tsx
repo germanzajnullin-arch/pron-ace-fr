@@ -4,12 +4,21 @@ import { ChevronLeft, Mic, Send, Square } from "lucide-react";
 import { useRecorder } from "@/hooks/useRecorder";
 import { MicPermissionAlert } from "@/components/feedback/MicPermissionAlert";
 import { APP_NAME } from "@/config/constants";
+import { DAILY_FOCUS } from "@/config/dailyFocus";
 import { cn } from "@/lib/utils";
 import { createLogger } from "@/services/logger";
 
 const log = createLogger("AiChat");
 
+interface AiChatSearch {
+  /** Optional auto-launch prompt id — e.g. from the Daily Focus dashboard. */
+  prompt?: string;
+}
+
 export const Route = createFileRoute("/ai-chat")({
+  validateSearch: (search: Record<string, unknown>): AiChatSearch => ({
+    prompt: typeof search.prompt === "string" ? search.prompt : undefined,
+  }),
   head: () => ({
     meta: [
       { title: `AI Conversation — ${APP_NAME}` },
