@@ -52,12 +52,13 @@ const OPENERS: readonly string[] = [
 function AiChatPage() {
   const router = useRouter();
   const search = Route.useSearch();
+  const { goal } = usePersonalization();
+  const opener = useMemo(
+    () => (goal ? GOAL_AI_OPENER[goal] : OPENERS[Math.floor(Math.random() * OPENERS.length)]),
+    [goal],
+  );
   const [messages, setMessages] = useState<ChatMessage[]>(() => [
-    {
-      id: "opener",
-      role: "assistant",
-      text: OPENERS[Math.floor(Math.random() * OPENERS.length)],
-    },
+    { id: "opener", role: "assistant", text: opener },
   ]);
   const [pending, setPending] = useState(false);
   const [draft, setDraft] = useState("");
