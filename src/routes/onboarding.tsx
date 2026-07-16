@@ -205,7 +205,7 @@ function OnboardingPage() {
               <ChoiceCard
                 key={o.value}
                 selected={goal === o.value}
-                onClick={() => setGoal(o.value)}
+                onClick={() => pickAndAdvance(setGoal, 0)(o.value)}
                 label={o.label}
                 emoji={o.emoji}
               />
