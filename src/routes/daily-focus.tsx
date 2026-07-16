@@ -1,10 +1,11 @@
 import { createFileRoute, useNavigate, type LinkOptions } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
-import { Ear, Mic2, MessageCircle, Check, ChevronRight, Lightbulb } from "lucide-react";
+import { Ear, Mic2, MessageCircle, Check, ChevronRight, Lightbulb, Target } from "lucide-react";
 import { APP_NAME } from "@/config/constants";
 import { DAILY_FOCUS } from "@/config/dailyFocus";
 import { ThemeSwitcher } from "@/components/theme/ThemeSwitcher";
 import { MOCK_RECENT_ATTEMPTS } from "@/config/mockData";
+import { usePersonalization, LEVEL_PHRASE, GOAL_LABEL } from "@/lib/personalization";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/daily-focus")({
