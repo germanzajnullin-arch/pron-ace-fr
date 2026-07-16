@@ -182,19 +182,8 @@ export const useRecorder = ({
         return;
       }
 
-      const rec: RecordingResult = { transcript: "", audioBlob: blob, durationMs };
-      const breakdown = await scoreOnServer(blob, durationMs);
-      // Backfill transcript for UI callbacks. Recompute here so the diff is
-      // aligned with what the server actually heard.
-      const local = computePronunciationMetrics({
-        expected: expectedRef.current,
-        heard: (breakdown.diff.filter((c) => c.kind !== "missing").map((c) => c.text).join(" ")),
-        durationMs,
-      });
-      rec.transcript = local.diff
-        .filter((c) => c.kind !== "missing")
-        .map((c) => c.text)
-        .join(" ");
+      const { breakdown, transcript } = await scoreOnServer(blob, durationMs);
+      const rec: RecordingResult = { transcript, audioBlob: blob, durationMs };
       setResult(rec);
       setScore(breakdown);
       setState("scored");
