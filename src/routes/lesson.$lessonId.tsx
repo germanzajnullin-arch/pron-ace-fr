@@ -71,9 +71,33 @@ function LessonPage() {
   const recorder = useRecorder({
     expectedText: lesson?.frenchText ?? "",
     onScored: async (result, score) => {
-      if (!session || !lesson) {
-        log.info("skipping save (no session or lesson)");
-        setSavedNote(session ? null : "Sign in to save attempts to your history.");
+      if (!lesson) return;
+      if (!session) {
+        // Guest: keep the last few attempts locally and nudge sign-in once.
+        try {
+          pushGuestAttempt({
+            lessonId: lesson.id,
+            expectedText: lesson.frenchText,
+            transcript: result.transcript,
+            score: score.score,
+            durationMs: result.durationMs,
+            createdAt: new Date().toISOString(),
+          });
+        } catch (err) {
+          log.error("guest cache failed", err);
+        }
+        setSavedNote("Saved locally on this device.");
+        if (!guestPromptShown.current) {
+          guestPromptShown.current = true;
+          toast("Great job!", {
+            description:
+              "Sign in now to save your progress and unlock advanced analytics.",
+            action: {
+              label: "Sign in",
+              onClick: () => void navigate({ to: "/auth" }),
+            },
+          });
+        }
         return;
       }
       try {
