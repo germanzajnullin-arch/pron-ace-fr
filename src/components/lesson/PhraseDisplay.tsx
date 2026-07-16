@@ -1,21 +1,23 @@
-import { Lightbulb, Volume2 } from "lucide-react";
+import { Lightbulb } from "lucide-react";
+import { PlayAudioButton } from "./PlayAudioButton";
 
 interface PhraseDisplayProps {
   title?: string;
   frenchText: string;
   translation?: string | null;
   hints?: readonly string[];
-  onPlayAudio?: () => void;
-  audioAvailable?: boolean;
 }
 
+/**
+ * Presents a French phrase with a prominent TTS "Play Audio" button.
+ * Audio is generated on-device via the Web Speech API in fr-FR, so every
+ * lesson has playback whether or not it ships with a recorded example.
+ */
 export function PhraseDisplay({
   title,
   frenchText,
   translation,
   hints,
-  onPlayAudio,
-  audioAvailable,
 }: PhraseDisplayProps) {
   return (
     <div className="rounded-3xl bg-gradient-surface p-6 shadow-elevated">
@@ -24,22 +26,19 @@ export function PhraseDisplay({
           {title}
         </p>
       ) : null}
-      <p className="mt-2 text-2xl font-semibold leading-snug text-foreground">
+
+      <div className="mt-3 flex justify-center">
+        <PlayAudioButton text={frenchText} variant="prominent" />
+      </div>
+
+      <p className="mt-5 text-center text-2xl font-semibold leading-snug text-foreground">
         {frenchText}
       </p>
-      {translation ? (
-        <p className="mt-2 text-sm italic text-muted-foreground">{translation}</p>
-      ) : null}
 
-      {audioAvailable && onPlayAudio ? (
-        <button
-          type="button"
-          onClick={onPlayAudio}
-          className="mt-4 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/20"
-        >
-          <Volume2 className="h-3.5 w-3.5" aria-hidden />
-          Listen to example
-        </button>
+      {translation ? (
+        <p className="mt-2 text-center text-sm italic text-muted-foreground">
+          {translation}
+        </p>
       ) : null}
 
       {hints && hints.length > 0 ? (
