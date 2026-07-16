@@ -11,6 +11,7 @@ import {
 import { APP_NAME } from "@/config/constants";
 import { cn } from "@/lib/utils";
 import { setOnboardingCompleted } from "@/lib/onboarding";
+import { writeLocalAnswers, type OnboardingAnswers } from "@/lib/personalization";
 
 export const Route = createFileRoute("/onboarding")({
   head: () => ({ meta: [{ title: `Get started — ${APP_NAME}` }] }),
@@ -106,6 +107,34 @@ function OnboardingPage() {
     }
   };
 
+  const buildAnswers = (): OnboardingAnswers => ({
+    goal,
+    french_level: level ?? "A1",
+    pain_point: painPoint,
+    audio_challenge_answer: audioAnswer,
+    daily_goal_minutes: Number(target ?? "10"),
+  });
+
+  // Persist the consolidated answers on every change so a refresh mid-quiz
+  // doesn't lose progress.
+  useEffect(() => {
+    writeLocalAnswers(buildAnswers());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [goal, level, painPoint, audioAnswer, target]);
+
+  // Auto-advance 400ms after selecting an option (except on the final step).
+  // Explicit trigger (not derived from state) so pressing Back doesn't re-fire.
+  const scheduleAdvance = (nextStep: StepId) => {
+    if (nextStep > 4) return;
+    window.setTimeout(() => {
+      setStep((s) => (s === nextStep - 1 ? nextStep : s));
+    }, 400);
+  };
+  const pickAndAdvance = <T,>(setter: (v: T) => void, from: StepId) => (v: T) => {
+    setter(v);
+    if (from < 4) scheduleAdvance((from + 1) as StepId);
+  };
+
   const handleNext = async () => {
     if (!canProceed) return;
     if (step < 4) {
@@ -115,21 +144,7 @@ function OnboardingPage() {
     setSubmitting(true);
     setError(null);
 
-    // Cache answers locally — usable by guests and syncable after future sign-in.
-    try {
-      window.localStorage.setItem(
-        "onboarding_answers",
-        JSON.stringify({
-          goal,
-          french_level: level ?? "A1",
-          pain_point: painPoint,
-          audio_challenge_answer: audioAnswer,
-          daily_goal_minutes: Number(target),
-        }),
-      );
-    } catch {
-      /* noop */
-    }
+    writeLocalAnswers(buildAnswers());
 
     if (session?.user) {
       const { error: updateError } = await supabase
@@ -190,7 +205,7 @@ function OnboardingPage() {
               <ChoiceCard
                 key={o.value}
                 selected={goal === o.value}
-                onClick={() => setGoal(o.value)}
+                onClick={() => pickAndAdvance(setGoal, 0)(o.value)}
                 label={o.label}
                 emoji={o.emoji}
               />
@@ -206,7 +221,7 @@ function OnboardingPage() {
               <ChoiceCard
                 key={o.value}
                 selected={level === o.value}
-                onClick={() => setLevel(o.value)}
+                onClick={() => pickAndAdvance(setLevel, 1)(o.value)}
                 label={o.label}
                 hint={o.hint}
                 emoji={o.emoji}
@@ -224,7 +239,7 @@ function OnboardingPage() {
               <ChoiceCard
                 key={o.value}
                 selected={painPoint === o.value}
-                onClick={() => setPainPoint(o.value)}
+                onClick={() => pickAndAdvance(setPainPoint, 2)(o.value)}
                 label={o.label}
                 emoji={o.emoji}
               />
@@ -249,7 +264,7 @@ function OnboardingPage() {
               <button
                 key={o.value}
                 type="button"
-                onClick={() => setAudioAnswer(o.value)}
+                onClick={() => pickAndAdvance(setAudioAnswer, 3)(o.value)}
                 className={cn(
                   "rounded-2xl border p-4 text-left transition-all duration-300",
                   audioAnswer === o.value

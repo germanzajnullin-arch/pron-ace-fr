@@ -1,10 +1,11 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, Mic, Send, Square } from "lucide-react";
 import { useRecorder } from "@/hooks/useRecorder";
 import { MicPermissionAlert } from "@/components/feedback/MicPermissionAlert";
 import { APP_NAME } from "@/config/constants";
 import { DAILY_FOCUS } from "@/config/dailyFocus";
+import { usePersonalization, GOAL_AI_OPENER } from "@/lib/personalization";
 import { cn } from "@/lib/utils";
 import { createLogger } from "@/services/logger";
 
@@ -51,13 +52,23 @@ const OPENERS: readonly string[] = [
 function AiChatPage() {
   const router = useRouter();
   const search = Route.useSearch();
+  const { goal } = usePersonalization();
+  const opener = useMemo(
+    () => (goal ? GOAL_AI_OPENER[goal] : OPENERS[Math.floor(Math.random() * OPENERS.length)]),
+    [goal],
+  );
   const [messages, setMessages] = useState<ChatMessage[]>(() => [
-    {
-      id: "opener",
-      role: "assistant",
-      text: OPENERS[Math.floor(Math.random() * OPENERS.length)],
-    },
+    { id: "opener", role: "assistant", text: opener },
   ]);
+
+  // Refresh the opener if personalization data hydrates after mount (guests).
+  useEffect(() => {
+    setMessages((prev) =>
+      prev.length === 1 && prev[0].id === "opener"
+        ? [{ id: "opener", role: "assistant", text: opener }]
+        : prev,
+    );
+  }, [opener]);
   const [pending, setPending] = useState(false);
   const [draft, setDraft] = useState("");
   const scrollRef = useRef<HTMLDivElement | null>(null);

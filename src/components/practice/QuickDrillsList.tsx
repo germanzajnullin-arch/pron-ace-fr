@@ -2,14 +2,12 @@ import { Link } from "@tanstack/react-router";
 import { ChevronRight, Sparkles } from "lucide-react";
 import { QUICK_DRILL_MODULES } from "@/config/modules";
 import { PAIN_POINT_TO_MODULE } from "@/config/painPointMap";
-import { useProfile, type PainPoint } from "@/hooks/useProfile";
+import { usePersonalization } from "@/lib/personalization";
 import { cn } from "@/lib/utils";
 
 export function QuickDrillsList() {
-  const { profile } = useProfile();
-  const recommendedModuleId = profile?.pain_point
-    ? PAIN_POINT_TO_MODULE[profile.pain_point as PainPoint]
-    : null;
+  const { pain_point } = usePersonalization();
+  const recommendedModuleId = pain_point ? PAIN_POINT_TO_MODULE[pain_point] : null;
 
   return (
     <section aria-labelledby="quick-drills-heading" className="space-y-3">

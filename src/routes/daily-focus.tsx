@@ -1,10 +1,11 @@
 import { createFileRoute, useNavigate, type LinkOptions } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
-import { Ear, Mic2, MessageCircle, Check, ChevronRight, Lightbulb } from "lucide-react";
+import { Ear, Mic2, MessageCircle, Check, ChevronRight, Lightbulb, Target } from "lucide-react";
 import { APP_NAME } from "@/config/constants";
 import { DAILY_FOCUS } from "@/config/dailyFocus";
 import { ThemeSwitcher } from "@/components/theme/ThemeSwitcher";
 import { MOCK_RECENT_ATTEMPTS } from "@/config/mockData";
+import { usePersonalization, LEVEL_PHRASE, GOAL_LABEL } from "@/lib/personalization";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/daily-focus")({
@@ -68,6 +69,7 @@ const ACTIONS: readonly DailyAction[] = [
 ];
 
 function DailyFocusPage() {
+  const { goal, french_level } = usePersonalization();
   const [done, setDone] = useState<Record<DailyAction["id"], boolean>>({
     ear: false,
     mouth: false,
@@ -76,6 +78,7 @@ function DailyFocusPage() {
   const completedCount = Object.values(done).filter(Boolean).length;
 
   const smartTip = buildSmartTip();
+  const phrase = LEVEL_PHRASE[french_level];
 
   return (
     <main className="flex-1 px-4 pt-8 pb-6 space-y-6">
@@ -87,9 +90,31 @@ function DailyFocusPage() {
           <h1 className="text-3xl font-bold">
             Bonne journée <span className="text-gradient-neon">✨</span>
           </h1>
+          <div className="flex flex-wrap items-center gap-1.5 pt-1">
+            <span className="inline-flex items-center rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+              Level {french_level}
+            </span>
+            {goal && (
+              <span className="inline-flex items-center gap-1 rounded-full border border-accent/40 bg-accent/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent">
+                <Target className="h-3 w-3" aria-hidden />
+                {GOAL_LABEL[goal]}
+              </span>
+            )}
+          </div>
         </div>
         <ThemeSwitcher className="mt-1 shrink-0" />
       </header>
+
+      <section
+        aria-label="Today's target phrase"
+        className="rounded-2xl border border-border/60 bg-surface p-4"
+      >
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+          Today's phrase · {french_level}
+        </p>
+        <p className="mt-1 text-xl font-bold leading-snug">{phrase.french}</p>
+        <p className="mt-1 text-sm text-muted-foreground">{phrase.translation}</p>
+      </section>
 
       <section aria-labelledby="daily-tasks-heading" className="space-y-3">
         <div className="flex items-baseline justify-between px-1">
