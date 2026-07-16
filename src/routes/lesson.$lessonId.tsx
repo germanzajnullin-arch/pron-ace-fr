@@ -111,12 +111,18 @@ function LessonPage() {
             transcript: result.transcript,
             score: score.score,
             durationMs: result.durationMs,
+            accuracyScore: score.accuracy,
+            fluencyScore: score.fluency,
+            completenessScore: score.completeness,
           },
         });
         setSavedNote("Attempt saved to your progress.");
       } catch (err) {
         log.error("save failed", err);
-        setSavedNote("Couldn't save this attempt — try again in a moment.");
+        toast.error("Couldn't save this attempt", {
+          description: "Try again in a moment — your recording is still shown below.",
+        });
+        setSavedNote(null);
       }
     },
   });
