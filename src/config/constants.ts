@@ -25,7 +25,7 @@ export const SCORING = {
 } as const;
 
 export const TABS = [
-  { id: "today", label: "Today", to: "/today" as const },
+  { id: "daily-focus", label: "Daily Focus", to: "/daily-focus" as const },
   { id: "practice", label: "Practice", to: "/practice" as const },
   { id: "progress", label: "Progress", to: "/progress" as const },
 ] as const;
