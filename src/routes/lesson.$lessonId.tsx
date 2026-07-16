@@ -191,24 +191,27 @@ function LessonNavBar({ prevHref, nextHref, onBack }: LessonNavBarProps) {
           Back
         </button>
       )}
-      <Link
-        to="/lesson/$lessonId"
-        params={{ lessonId: nextHref ?? "" }}
-        aria-label="Next lesson"
-        disabled={!nextHref}
-        onClick={(e) => {
-          if (!nextHref) e.preventDefault();
-        }}
-        className={cn(
-          "flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl text-sm font-semibold transition-transform active:scale-[0.98]",
-          nextHref
-            ? "bg-gradient-neon text-background shadow-neon"
-            : "cursor-not-allowed border border-border/60 bg-surface text-muted-foreground",
-        )}
-      >
-        Next
-        <ArrowRight className="h-5 w-5" aria-hidden />
-      </Link>
+      {nextHref ? (
+        <Link
+          to="/lesson/$lessonId"
+          params={{ lessonId: nextHref }}
+          aria-label="Next lesson"
+          className="flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl bg-gradient-neon text-sm font-semibold text-background shadow-neon transition-transform active:scale-[0.98]"
+        >
+          Next
+          <ArrowRight className="h-5 w-5" aria-hidden />
+        </Link>
+      ) : (
+        <button
+          type="button"
+          disabled
+          aria-label="No next lesson"
+          className="flex h-12 flex-1 cursor-not-allowed items-center justify-center gap-2 rounded-2xl border border-border/60 bg-surface text-sm font-semibold text-muted-foreground"
+        >
+          Next
+          <ArrowRight className="h-5 w-5" aria-hidden />
+        </button>
+      )}
     </nav>
   );
 }
