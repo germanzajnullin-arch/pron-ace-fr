@@ -239,7 +239,7 @@ function OnboardingPage() {
               <ChoiceCard
                 key={o.value}
                 selected={painPoint === o.value}
-                onClick={() => setPainPoint(o.value)}
+                onClick={() => pickAndAdvance(setPainPoint, 2)(o.value)}
                 label={o.label}
                 emoji={o.emoji}
               />
