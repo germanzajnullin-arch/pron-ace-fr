@@ -69,7 +69,7 @@ const ACTIONS: readonly DailyAction[] = [
 ];
 
 function DailyFocusPage() {
-  const { goal, french_level, pain_point } = usePersonalization();
+  const { goal, french_level } = usePersonalization();
   const [done, setDone] = useState<Record<DailyAction["id"], boolean>>({
     ear: false,
     mouth: false,
