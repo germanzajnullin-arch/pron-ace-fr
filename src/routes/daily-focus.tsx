@@ -1,10 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { Sparkles, Play, Check, Lightbulb } from "lucide-react";
 import { APP_NAME } from "@/config/constants";
-import { DAILY_TOPICS, DEFAULT_DAILY_TOPIC, type DailyTask } from "@/config/dailyTopics";
+import {
+  DAILY_TOPICS,
+  DEFAULT_DAILY_TOPIC,
+  type DailyTask,
+  type DailyTopic,
+} from "@/config/dailyTopics";
+import { getModuleById } from "@/config/modules";
 import { MOCK_RECENT_ATTEMPTS } from "@/config/mockData";
+import { listLessonsByCategory } from "@/lib/lessons.functions";
 import { useProfile, type PainPoint } from "@/hooks/useProfile";
+import { PlayAudioButton } from "@/components/lesson/PlayAudioButton";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/daily-focus")({
@@ -50,11 +59,19 @@ function DailyFocusPage() {
   );
 }
 
-function DailyChallengeCard({
-  topic,
-}: {
-  topic: (typeof DAILY_TOPICS)[PainPoint];
-}) {
+function DailyChallengeCard({ topic }: { topic: DailyTopic }) {
+  const mod = getModuleById(topic.moduleId);
+  const { data: lessons } = useQuery({
+    queryKey: ["lessons", mod?.category ?? "none"],
+    queryFn: () =>
+      mod
+        ? listLessonsByCategory({ data: { category: mod.category } })
+        : Promise.resolve([]),
+    enabled: !!mod,
+    staleTime: 60_000,
+  });
+  const firstLesson = lessons?.[0];
+
   return (
     <section
       aria-labelledby="daily-challenge-heading"
@@ -78,14 +95,40 @@ function DailyChallengeCard({
           </h2>
           <p className="text-sm text-muted-foreground">{topic.description}</p>
         </div>
-        <Link
-          to="/module/$moduleId"
-          params={{ moduleId: topic.moduleId }}
-          className="inline-flex items-center gap-2 rounded-full bg-gradient-neon px-5 py-2.5 text-sm font-semibold text-background shadow-neon transition-transform active:scale-95"
-        >
-          <Play className="h-4 w-4 fill-current" />
-          Start Daily Drill
-        </Link>
+
+        {firstLesson ? (
+          <div className="rounded-2xl border border-white/10 bg-background/40 p-3">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+              Sample phrase
+            </p>
+            <p className="mt-1 text-base font-semibold leading-snug">
+              {firstLesson.french_text}
+            </p>
+            <div className="mt-2">
+              <PlayAudioButton text={firstLesson.french_text} variant="compact" />
+            </div>
+          </div>
+        ) : null}
+
+        {firstLesson ? (
+          <Link
+            to="/lesson/$lessonId"
+            params={{ lessonId: firstLesson.id }}
+            className="inline-flex items-center gap-2 rounded-full bg-gradient-neon px-5 py-2.5 text-sm font-semibold text-background shadow-neon transition-transform active:scale-95"
+          >
+            <Play className="h-4 w-4 fill-current" />
+            Start Daily Drill
+          </Link>
+        ) : mod ? (
+          <Link
+            to="/module/$moduleId"
+            params={{ moduleId: mod.id }}
+            className="inline-flex items-center gap-2 rounded-full bg-gradient-neon px-5 py-2.5 text-sm font-semibold text-background shadow-neon transition-transform active:scale-95"
+          >
+            <Play className="h-4 w-4 fill-current" />
+            Start Daily Drill
+          </Link>
+        ) : null}
       </div>
     </section>
   );
