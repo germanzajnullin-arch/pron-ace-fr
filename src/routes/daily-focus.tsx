@@ -14,6 +14,7 @@ import { MOCK_RECENT_ATTEMPTS } from "@/config/mockData";
 import { listLessonsByCategory } from "@/lib/lessons.functions";
 import { useProfile, type PainPoint } from "@/hooks/useProfile";
 import { PlayAudioButton } from "@/components/lesson/PlayAudioButton";
+import { ThemeSwitcher } from "@/components/theme/ThemeSwitcher";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/daily-focus")({
