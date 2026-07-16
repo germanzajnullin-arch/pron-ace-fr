@@ -181,6 +181,7 @@ function OnboardingGate() {
         <Outlet />
       </div>
       {!hideChrome && <BottomTabBar />}
+      <Toaster position="top-center" richColors closeButton />
     </>
   );
 }
