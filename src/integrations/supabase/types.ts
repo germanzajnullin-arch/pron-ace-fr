@@ -60,6 +60,7 @@ export type Database = {
           id: string
           onboarding_completed: boolean
           pain_point: string | null
+          theme: string
           updated_at: string
         }
         Insert: {
@@ -71,6 +72,7 @@ export type Database = {
           id: string
           onboarding_completed?: boolean
           pain_point?: string | null
+          theme?: string
           updated_at?: string
         }
         Update: {
@@ -82,6 +84,7 @@ export type Database = {
           id?: string
           onboarding_completed?: boolean
           pain_point?: string | null
+          theme?: string
           updated_at?: string
         }
         Relationships: []
