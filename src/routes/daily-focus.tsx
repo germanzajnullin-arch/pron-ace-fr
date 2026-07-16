@@ -1,20 +1,10 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
-import { Sparkles, Play, Check, Lightbulb } from "lucide-react";
+import { createFileRoute, useNavigate, type LinkOptions } from "@tanstack/react-router";
+import { useState, type ReactNode } from "react";
+import { Ear, Mic2, MessageCircle, Check, ChevronRight, Lightbulb } from "lucide-react";
 import { APP_NAME } from "@/config/constants";
-import {
-  DAILY_TOPICS,
-  DEFAULT_DAILY_TOPIC,
-  type DailyTask,
-  type DailyTopic,
-} from "@/config/dailyTopics";
-import { getModuleById } from "@/config/modules";
-import { MOCK_RECENT_ATTEMPTS } from "@/config/mockData";
-import { listLessonsByCategory } from "@/lib/lessons.functions";
-import { useProfile, type PainPoint } from "@/hooks/useProfile";
-import { PlayAudioButton } from "@/components/lesson/PlayAudioButton";
+import { DAILY_FOCUS } from "@/config/dailyFocus";
 import { ThemeSwitcher } from "@/components/theme/ThemeSwitcher";
+import { MOCK_RECENT_ATTEMPTS } from "@/config/mockData";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/daily-focus")({
@@ -24,21 +14,68 @@ export const Route = createFileRoute("/daily-focus")({
       {
         name: "description",
         content:
-          "Your topic of the day, a 3-step checklist, and a smart tip tailored to yesterday's performance.",
+          "Your daily action plan: ear training, mouth mechanics, and a real-life conversation.",
       },
     ],
   }),
   component: DailyFocusPage,
 });
 
-function DailyFocusPage() {
-  const { profile } = useProfile();
-  const topic = useMemo(() => {
-    const key = profile?.pain_point as PainPoint | null | undefined;
-    return key && key in DAILY_TOPICS ? DAILY_TOPICS[key] : DEFAULT_DAILY_TOPIC;
-  }, [profile?.pain_point]);
+interface DailyAction {
+  readonly id: "ear" | "mouth" | "chat";
+  readonly icon: typeof Ear;
+  readonly eyebrow: string;
+  readonly title: string;
+  readonly description: string;
+  readonly cta: string;
+  readonly to: LinkOptions;
+}
 
-  const smartTip = useMemo(() => buildSmartTip(topic.title), [topic.title]);
+const ACTIONS: readonly DailyAction[] = [
+  {
+    id: "ear",
+    icon: Ear,
+    eyebrow: "Phonetic ear training",
+    title: "un vs une",
+    description: "Quick auditory quiz — spot the masculine vs feminine article.",
+    cta: "Start quiz",
+    to: { to: "/mini-quiz/un-une" },
+  },
+  {
+    id: "mouth",
+    icon: Mic2,
+    eyebrow: "Mouth mechanics",
+    title: "bon · bain · banc",
+    description: "Drill the three nasal vowels with live pronunciation scoring.",
+    cta: "Open lesson",
+    to: {
+      to: "/lesson/$lessonId",
+      params: { lessonId: DAILY_FOCUS.nasalClusterLessonId },
+    },
+  },
+  {
+    id: "chat",
+    icon: MessageCircle,
+    eyebrow: "Situational chat",
+    title: "Introduce yourself",
+    description: "Kick off a French conversation with an intro prompt.",
+    cta: "Start chat",
+    to: {
+      to: "/ai-chat",
+      search: { prompt: DAILY_FOCUS.aiIntroPromptKey },
+    },
+  },
+];
+
+function DailyFocusPage() {
+  const [done, setDone] = useState<Record<DailyAction["id"], boolean>>({
+    ear: false,
+    mouth: false,
+    chat: false,
+  });
+  const completedCount = Object.values(done).filter(Boolean).length;
+
+  const smartTip = buildSmartTip();
 
   return (
     <main className="flex-1 px-4 pt-8 pb-6 space-y-6">
@@ -54,189 +91,146 @@ function DailyFocusPage() {
         <ThemeSwitcher className="mt-1 shrink-0" />
       </header>
 
-      <DailyChallengeCard topic={topic} />
+      <section aria-labelledby="daily-tasks-heading" className="space-y-3">
+        <div className="flex items-baseline justify-between px-1">
+          <h2
+            id="daily-tasks-heading"
+            className="text-sm font-semibold uppercase tracking-widest text-muted-foreground"
+          >
+            Today's plan
+          </h2>
+          <span className="text-xs font-medium tabular-nums text-muted-foreground">
+            {completedCount} / {ACTIONS.length}
+          </span>
+        </div>
 
-      <DailyChecklist tasks={topic.tasks} />
+        <ul className="space-y-3">
+          {ACTIONS.map((action) => (
+            <li key={action.id}>
+              <DailyActionCard
+                action={action}
+                complete={done[action.id]}
+                onToggle={() =>
+                  setDone((prev) => ({ ...prev, [action.id]: !prev[action.id] }))
+                }
+              />
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <SmartRecommendation tip={smartTip} />
     </main>
   );
 }
 
-function DailyChallengeCard({ topic }: { topic: DailyTopic }) {
-  const mod = getModuleById(topic.moduleId);
-  const { data: lessons } = useQuery({
-    queryKey: ["lessons", mod?.category ?? "none"],
-    queryFn: () =>
-      mod
-        ? listLessonsByCategory({ data: { category: mod.category } })
-        : Promise.resolve([]),
-    enabled: !!mod,
-    staleTime: 60_000,
-  });
-  const firstLesson = lessons?.[0];
+function DailyActionCard({
+  action,
+  complete,
+  onToggle,
+}: {
+  action: DailyAction;
+  complete: boolean;
+  onToggle: () => void;
+}) {
+  const navigate = useNavigate();
+  const Icon = action.icon;
 
-  return (
-    <section
-      aria-labelledby="daily-challenge-heading"
-      className="relative overflow-hidden rounded-3xl border border-primary/25 bg-gradient-surface p-5 shadow-elevated"
-    >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-primary/20 blur-3xl"
-      />
-      <div className="relative space-y-4">
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest text-primary">
-            <Sparkles className="h-3 w-3" />
-            Topic of the day
-          </span>
-        </div>
-        <div className="space-y-1.5">
-          <h2 id="daily-challenge-heading" className="text-xl font-bold leading-tight">
-            Today's Focus:{" "}
-            <span className="text-gradient-neon">{topic.title}</span>
-          </h2>
-          <p className="text-sm text-muted-foreground">{topic.description}</p>
-        </div>
-
-        {firstLesson ? (
-          <div className="rounded-2xl border border-white/10 bg-background/40 p-3">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-              Sample phrase
-            </p>
-            <p className="mt-1 text-base font-semibold leading-snug">
-              {firstLesson.french_text}
-            </p>
-            <div className="mt-2">
-              <PlayAudioButton text={firstLesson.french_text} variant="compact" />
-            </div>
-          </div>
-        ) : null}
-
-        {firstLesson ? (
-          <Link
-            to="/lesson/$lessonId"
-            params={{ lessonId: firstLesson.id }}
-            className="inline-flex items-center gap-2 rounded-full bg-gradient-neon px-5 py-2.5 text-sm font-semibold text-background shadow-neon transition-transform active:scale-95"
-          >
-            <Play className="h-4 w-4 fill-current" />
-            Start Daily Drill
-          </Link>
-        ) : mod ? (
-          <Link
-            to="/module/$moduleId"
-            params={{ moduleId: mod.id }}
-            className="inline-flex items-center gap-2 rounded-full bg-gradient-neon px-5 py-2.5 text-sm font-semibold text-background shadow-neon transition-transform active:scale-95"
-          >
-            <Play className="h-4 w-4 fill-current" />
-            Start Daily Drill
-          </Link>
-        ) : null}
-      </div>
-    </section>
-  );
-}
-
-function DailyChecklist({ tasks }: { tasks: readonly DailyTask[] }) {
-  const [progress, setProgress] = useState<Record<string, number>>({});
-
-  const bump = (task: DailyTask) => {
-    setProgress((prev) => {
-      const current = prev[task.id] ?? 0;
-      const next = current >= task.target ? 0 : current + 1;
-      return { ...prev, [task.id]: next };
-    });
+  const launch = () => {
+    void navigate(action.to);
   };
 
-  const completedCount = tasks.reduce(
-    (n, t) => n + ((progress[t.id] ?? 0) >= t.target ? 1 : 0),
-    0,
-  );
-
   return (
-    <section aria-labelledby="daily-tasks-heading" className="space-y-3">
-      <div className="flex items-baseline justify-between px-1">
-        <h3
-          id="daily-tasks-heading"
-          className="text-sm font-semibold uppercase tracking-widest text-muted-foreground"
+    <article
+      className={cn(
+        "group relative overflow-hidden rounded-3xl border p-4 shadow-elevated transition-all duration-300",
+        complete
+          ? "border-primary/50 bg-primary/5"
+          : "border-border/60 bg-surface hover:bg-surface-2",
+      )}
+    >
+      <div className="flex items-start gap-3">
+        <span
+          aria-hidden
+          className={cn(
+            "flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl transition-all duration-300",
+            complete
+              ? "bg-primary/20 text-primary"
+              : "bg-background text-primary",
+          )}
         >
-          Daily Tasks
-        </h3>
-        <span className="text-xs font-medium tabular-nums text-muted-foreground">
-          {completedCount} / {tasks.length}
+          <Icon className="h-5 w-5" />
         </span>
+
+        <div className="min-w-0 flex-1">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+            {action.eyebrow}
+          </p>
+          <h3
+            className={cn(
+              "mt-0.5 text-lg font-bold leading-tight transition-all duration-300",
+              complete && "text-muted-foreground line-through decoration-primary/70",
+            )}
+          >
+            {action.title}
+          </h3>
+          <p className="mt-1 text-sm text-muted-foreground">{action.description}</p>
+        </div>
+
+        <CompletionToggle complete={complete} onToggle={onToggle} label={action.title} />
       </div>
-      <ul className="space-y-2">
-        {tasks.map((task) => {
-          const done = progress[task.id] ?? 0;
-          const isComplete = done >= task.target;
-          return (
-            <li key={task.id}>
-              <button
-                type="button"
-                onClick={() => bump(task)}
-                aria-pressed={isComplete}
-                className={cn(
-                  "group flex w-full items-center gap-3 rounded-2xl border p-4 text-left transition-all duration-300",
-                  isComplete
-                    ? "border-primary/50 bg-primary/10 shadow-neon"
-                    : "border-border/60 bg-surface hover:bg-surface-2",
-                )}
-              >
-                <span
-                  aria-hidden
-                  className={cn(
-                    "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-xl transition-all duration-300",
-                    isComplete
-                      ? "scale-95 bg-primary/25 opacity-70"
-                      : "bg-background",
-                  )}
-                >
-                  {task.emoji}
-                </span>
-                <div className="flex-1 space-y-0.5">
-                  <p
-                    className={cn(
-                      "font-medium leading-tight transition-all duration-300",
-                      isComplete && "text-muted-foreground line-through decoration-primary/70",
-                    )}
-                  >
-                    {task.title}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {task.detail}
-                    <span className="ml-1 tabular-nums text-foreground/70">
-                      ({done}/{task.target})
-                    </span>
-                  </p>
-                </div>
-                <span
-                  aria-hidden
-                  className={cn(
-                    "flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-all duration-300",
-                    isComplete
-                      ? "scale-110 border-primary bg-primary text-background"
-                      : "border-border bg-surface-2 text-transparent",
-                  )}
-                >
-                  <Check
-                    className={cn(
-                      "h-4 w-4 transition-transform duration-300",
-                      isComplete ? "scale-100" : "scale-0",
-                    )}
-                  />
-                </span>
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-    </section>
+
+      <button
+        type="button"
+        onClick={launch}
+        className={cn(
+          "mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition-all duration-300 active:scale-[0.98]",
+          complete
+            ? "border border-primary/40 bg-transparent text-primary hover:bg-primary/10"
+            : "bg-gradient-neon text-background shadow-neon",
+        )}
+      >
+        {complete ? "Practice again" : action.cta}
+        <ChevronRight className="h-4 w-4" aria-hidden />
+      </button>
+    </article>
   );
 }
 
-function SmartRecommendation({ tip }: { tip: string }) {
+function CompletionToggle({
+  complete,
+  onToggle,
+  label,
+}: {
+  complete: boolean;
+  onToggle: () => void;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-pressed={complete}
+      aria-label={complete ? `Mark ${label} as not done` : `Mark ${label} as done`}
+      className={cn(
+        "flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-all duration-300",
+        complete
+          ? "scale-110 border-primary bg-primary text-background shadow-neon"
+          : "border-border bg-surface-2 text-transparent hover:border-primary/60",
+      )}
+    >
+      <Check
+        className={cn(
+          "h-4 w-4 transition-transform duration-300",
+          complete ? "scale-100" : "scale-0",
+        )}
+        aria-hidden
+      />
+    </button>
+  );
+}
+
+function SmartRecommendation({ tip }: { tip: string }): ReactNode {
   return (
     <section className="rounded-2xl border border-accent/25 bg-surface p-4">
       <div className="flex items-start gap-3">
@@ -255,23 +249,22 @@ function SmartRecommendation({ tip }: { tip: string }) {
 }
 
 /**
- * Builds a lightweight recommendation from the last attempt.
- * Real engine will read `user_attempts` once auth is wired; this shape
- * keeps the UI truthful with the mocked history until then.
+ * Lightweight recommendation derived from the most recent recorded attempt.
+ * Swappable for a real `user_attempts` read once analytics land.
  */
-function buildSmartTip(topicTitle: string): string {
+function buildSmartTip(): string {
   const last = MOCK_RECENT_ATTEMPTS[0];
   if (!last) {
-    return `Start with ${topicTitle.toLowerCase()} — a 3-minute warm-up unlocks the rest.`;
+    return "Start with a 3-minute ear-training warm-up — it primes the rest of your session.";
   }
   const pct = Math.round(last.score * 100);
   if (pct >= 90) {
-    return `Yesterday you nailed "${truncate(last.expectedText)}" at ${pct}%. Push into ${topicTitle.toLowerCase()} today.`;
+    return `Yesterday you nailed "${truncate(last.expectedText)}" at ${pct}%. Push into the nasal cluster today.`;
   }
   if (pct >= 70) {
-    return `Solid ${pct}% on "${truncate(last.expectedText)}". Focus on ${topicTitle.toLowerCase()} to convert good into great.`;
+    return `Solid ${pct}% on "${truncate(last.expectedText)}" — replay it once, then tackle the mouth mechanics drill.`;
   }
-  return `"${truncate(last.expectedText)}" scored ${pct}% yesterday — replay it once, then tackle ${topicTitle.toLowerCase()}.`;
+  return `"${truncate(last.expectedText)}" scored ${pct}% yesterday. Slow down and start with the ear-training quiz.`;
 }
 
 function truncate(s: string, n = 32): string {
