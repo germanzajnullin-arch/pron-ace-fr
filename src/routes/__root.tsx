@@ -16,9 +16,8 @@ import { BottomTabBar } from "@/components/nav/BottomTabBar";
 import { Toaster } from "@/components/ui/sonner";
 import { APP_NAME } from "@/config/constants";
 import { useProfile } from "@/hooks/useProfile";
-import { setOnboardingCompleted } from "@/lib/onboarding";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import { isOnboardingCompleted, ONBOARDING_STORAGE_KEY } from "@/lib/onboarding";
+import { isOnboardingCompleted, setOnboardingCompleted, ONBOARDING_STORAGE_KEY } from "@/lib/onboarding";
 import { useAnswersSync } from "@/hooks/useAnswersSync";
 
 
