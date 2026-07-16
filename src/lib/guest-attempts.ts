@@ -9,6 +9,9 @@ export interface GuestAttempt {
   expectedText: string;
   transcript: string;
   score: number;
+  accuracyScore: number | null;
+  fluencyScore: number | null;
+  completenessScore: number | null;
   durationMs: number | null;
   createdAt: string;
 }
