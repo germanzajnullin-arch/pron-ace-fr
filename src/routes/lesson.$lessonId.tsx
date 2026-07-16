@@ -35,6 +35,7 @@ function LessonPage() {
   const { session } = useAuthSession();
   const save = useServerFn(saveAttempt);
   const [savedNote, setSavedNote] = useState<string | null>(null);
+  const guestPromptShown = useRef(false);
 
   const { data: lessonRow, isLoading } = useQuery({
     queryKey: ["lesson", lessonId],
