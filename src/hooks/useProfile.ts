@@ -7,6 +7,7 @@ export type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 
 export type PainPoint = "french_r" | "nasal_vowels" | "liaison" | "fast_speech";
 export type Goal = "overcome_barrier" | "professional" | "travel" | "accent";
+export type FrenchLevel = "A1" | "A2" | "B1" | "B2";
 
 /**
  * Reads and subscribes to the current user's profile.

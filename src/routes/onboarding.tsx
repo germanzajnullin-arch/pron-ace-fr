@@ -2,7 +2,12 @@ import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useState, useMemo, useEffect } from "react";
 import { Volume2, Check, ChevronRight, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useProfile, type Goal, type PainPoint } from "@/hooks/useProfile";
+import {
+  useProfile,
+  type Goal,
+  type PainPoint,
+  type FrenchLevel,
+} from "@/hooks/useProfile";
 import { APP_NAME } from "@/config/constants";
 import { cn } from "@/lib/utils";
 
@@ -11,7 +16,9 @@ export const Route = createFileRoute("/onboarding")({
   component: OnboardingPage,
 });
 
-type StepId = 0 | 1 | 2 | 3;
+/** 0=Goal · 1=Level · 2=Pain Point · 3=Audio · 4=Commitment */
+type StepId = 0 | 1 | 2 | 3 | 4;
+const TOTAL_STEPS = 5;
 
 interface Option<T extends string> {
   value: T;
@@ -25,6 +32,13 @@ const GOALS: Option<Goal>[] = [
   { value: "professional", label: "Sound professional at work", emoji: "💼" },
   { value: "travel", label: "Travel & understand locals", emoji: "✈️" },
   { value: "accent", label: "Perfect my accent", emoji: "🎯" },
+];
+
+const LEVELS: Option<FrenchLevel>[] = [
+  { value: "A1", label: "A1 — Beginner", hint: "Just starting out", emoji: "🌱" },
+  { value: "A2", label: "A2 — Elementary", hint: "Basic phrases", emoji: "🌿" },
+  { value: "B1", label: "B1 — Intermediate", hint: "Everyday conversations", emoji: "🌳" },
+  { value: "B2", label: "B2 — Upper-Intermediate", hint: "Fluent-ish, need polish", emoji: "🏆" },
 ];
 
 const PAIN_POINTS: Option<PainPoint>[] = [
@@ -50,35 +64,36 @@ function OnboardingPage() {
   const { profile, session, loading, refetch } = useProfile();
   const [step, setStep] = useState<StepId>(0);
   const [goal, setGoal] = useState<Goal | null>(null);
+  const [level, setLevel] = useState<FrenchLevel | null>(null);
   const [painPoint, setPainPoint] = useState<PainPoint | null>(null);
   const [audioAnswer, setAudioAnswer] = useState<"dessus" | "dessous" | null>(null);
   const [target, setTarget] = useState<"3" | "10" | "20" | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // If not signed in, bounce to auth. If already onboarded, bounce to practice.
   useEffect(() => {
     if (loading) return;
     if (!session) {
       router.navigate({ to: "/auth" });
     } else if (profile?.onboarding_completed) {
-      router.navigate({ to: "/practice" });
+      router.navigate({ to: "/daily-focus" });
     }
   }, [loading, session, profile, router]);
 
-  const totalSteps = 4;
-  const progress = ((step + 1) / totalSteps) * 100;
+  const progress = ((step + 1) / TOTAL_STEPS) * 100;
 
   const canProceed = useMemo(() => {
-    if (step === 0) return goal !== null;
-    if (step === 1) return painPoint !== null;
-    if (step === 2) return audioAnswer !== null;
-    if (step === 3) return target !== null;
-    return false;
-  }, [step, goal, painPoint, audioAnswer, target]);
+    switch (step) {
+      case 0: return goal !== null;
+      case 1: return level !== null;
+      case 2: return painPoint !== null;
+      case 3: return audioAnswer !== null;
+      case 4: return target !== null;
+      default: return false;
+    }
+  }, [step, goal, level, painPoint, audioAnswer, target]);
 
   const playAudio = () => {
-    // MVP mock: use Web Speech synthesis to say "dessous"
     try {
       const u = new SpeechSynthesisUtterance("dessous");
       u.lang = "fr-FR";
@@ -92,7 +107,7 @@ function OnboardingPage() {
 
   const handleNext = async () => {
     if (!canProceed) return;
-    if (step < 3) {
+    if (step < 4) {
       setStep((s) => (s + 1) as StepId);
       return;
     }
@@ -103,6 +118,7 @@ function OnboardingPage() {
       .from("profiles")
       .update({
         goal,
+        french_level: level ?? "A1",
         pain_point: painPoint,
         audio_challenge_answer: audioAnswer,
         daily_goal_minutes: Number(target),
@@ -115,7 +131,7 @@ function OnboardingPage() {
       return;
     }
     await refetch();
-    router.navigate({ to: "/practice" });
+    router.navigate({ to: "/daily-focus" });
   };
 
   const handleBack = () => {
@@ -132,10 +148,9 @@ function OnboardingPage() {
 
   return (
     <main className="flex-1 px-5 pt-8 pb-24 space-y-8">
-      {/* Progress */}
       <div className="space-y-2">
         <div className="flex items-center justify-between text-xs font-medium text-muted-foreground">
-          <span>Step {step + 1} of {totalSteps}</span>
+          <span>Step {step + 1} of {TOTAL_STEPS}</span>
           <span>{Math.round(progress)}%</span>
         </div>
         <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-2">
@@ -146,12 +161,8 @@ function OnboardingPage() {
         </div>
       </div>
 
-      {/* Step content */}
       {step === 0 && (
-        <StepScreen
-          eyebrow="Your goal"
-          title="What's your main goal?"
-        >
+        <StepScreen eyebrow="Your goal" title="What's your main goal?">
           <CardGrid>
             {GOALS.map((o) => (
               <ChoiceCard
@@ -167,10 +178,25 @@ function OnboardingPage() {
       )}
 
       {step === 1 && (
-        <StepScreen
-          eyebrow="Pain point"
-          title="What trips you up the most in French?"
-        >
+        <StepScreen eyebrow="Your level" title="What's your current French level?">
+          <div className="space-y-3">
+            {LEVELS.map((o) => (
+              <ChoiceCard
+                key={o.value}
+                selected={level === o.value}
+                onClick={() => setLevel(o.value)}
+                label={o.label}
+                hint={o.hint}
+                emoji={o.emoji}
+                wide
+              />
+            ))}
+          </div>
+        </StepScreen>
+      )}
+
+      {step === 2 && (
+        <StepScreen eyebrow="Pain point" title="What trips you up the most in French?">
           <CardGrid>
             {PAIN_POINTS.map((o) => (
               <ChoiceCard
@@ -185,11 +211,8 @@ function OnboardingPage() {
         </StepScreen>
       )}
 
-      {step === 2 && (
-        <StepScreen
-          eyebrow="Ear training"
-          title="Listen closely. Which word do you hear?"
-        >
+      {step === 3 && (
+        <StepScreen eyebrow="Ear training" title="Listen closely. Which word do you hear?">
           <button
             type="button"
             onClick={playAudio}
@@ -206,7 +229,7 @@ function OnboardingPage() {
                 type="button"
                 onClick={() => setAudioAnswer(o.value)}
                 className={cn(
-                  "rounded-2xl border p-4 text-left transition-all",
+                  "rounded-2xl border p-4 text-left transition-all duration-300",
                   audioAnswer === o.value
                     ? "border-primary bg-primary/10 shadow-neon"
                     : "border-border bg-surface hover:bg-surface-2",
@@ -220,11 +243,8 @@ function OnboardingPage() {
         </StepScreen>
       )}
 
-      {step === 3 && (
-        <StepScreen
-          eyebrow="Commitment"
-          title="Choose your daily target"
-        >
+      {step === 4 && (
+        <StepScreen eyebrow="Commitment" title="Choose your daily target">
           <div className="space-y-3">
             {TARGETS.map((o) => (
               <ChoiceCard
@@ -247,7 +267,6 @@ function OnboardingPage() {
         </p>
       )}
 
-      {/* Actions */}
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border/70 bg-background/90 backdrop-blur-lg">
         <div className="mx-auto flex max-w-md items-center gap-3 px-4 py-3 pb-[max(env(safe-area-inset-bottom),0.75rem)]">
           {step > 0 && (
@@ -264,7 +283,7 @@ function OnboardingPage() {
             onClick={handleNext}
             disabled={!canProceed || submitting}
             className={cn(
-              "flex flex-1 items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition-all",
+              "flex flex-1 items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition-all duration-300",
               canProceed && !submitting
                 ? "bg-gradient-neon text-background shadow-neon"
                 : "cursor-not-allowed bg-surface-2 text-muted-foreground",
@@ -274,7 +293,7 @@ function OnboardingPage() {
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <>
-                {step === 3 ? "Finish" : "Next"}
+                {step === 4 ? "Finish" : "Next"}
                 <ChevronRight className="h-4 w-4" />
               </>
             )}
@@ -333,7 +352,7 @@ function ChoiceCard({
       type="button"
       onClick={onClick}
       className={cn(
-        "group relative flex items-center gap-3 rounded-2xl border p-4 text-left transition-all",
+        "group relative flex items-center gap-3 rounded-2xl border p-4 text-left transition-all duration-300",
         selected
           ? "border-primary bg-primary/10 shadow-neon"
           : "border-border bg-surface hover:bg-surface-2",

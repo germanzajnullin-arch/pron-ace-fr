@@ -4,12 +4,21 @@ import { ChevronLeft, Mic, Send, Square } from "lucide-react";
 import { useRecorder } from "@/hooks/useRecorder";
 import { MicPermissionAlert } from "@/components/feedback/MicPermissionAlert";
 import { APP_NAME } from "@/config/constants";
+import { DAILY_FOCUS } from "@/config/dailyFocus";
 import { cn } from "@/lib/utils";
 import { createLogger } from "@/services/logger";
 
 const log = createLogger("AiChat");
 
+interface AiChatSearch {
+  /** Optional auto-launch prompt id — e.g. from the Daily Focus dashboard. */
+  prompt?: string;
+}
+
 export const Route = createFileRoute("/ai-chat")({
+  validateSearch: (search: Record<string, unknown>): AiChatSearch => ({
+    prompt: typeof search.prompt === "string" ? search.prompt : undefined,
+  }),
   head: () => ({
     meta: [
       { title: `AI Conversation — ${APP_NAME}` },
@@ -41,6 +50,7 @@ const OPENERS: readonly string[] = [
 
 function AiChatPage() {
   const router = useRouter();
+  const search = Route.useSearch();
   const [messages, setMessages] = useState<ChatMessage[]>(() => [
     {
       id: "opener",
@@ -51,6 +61,7 @@ function AiChatPage() {
   const [pending, setPending] = useState(false);
   const [draft, setDraft] = useState("");
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const autoLaunchedRef = useRef(false);
 
   const recorder = useRecorder({
     expectedText: "",
@@ -88,6 +99,17 @@ function AiChatPage() {
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, pending]);
+
+  // Auto-launch a canned opening user turn when arriving with ?prompt=…
+  useEffect(() => {
+    if (autoLaunchedRef.current) return;
+    if (search.prompt === DAILY_FOCUS.aiIntroPromptKey) {
+      autoLaunchedRef.current = true;
+      send(DAILY_FOCUS.aiIntroPromptText);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search.prompt]);
+
 
   const isRecording = recorder.state === "recording";
 
