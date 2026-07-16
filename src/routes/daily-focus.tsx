@@ -115,16 +115,16 @@ function DailyFocusPage() {
         <ThemeSwitcher className="mt-1 shrink-0" />
       </header>
 
-      <section
-        aria-label="Today's target phrase"
-        className="rounded-2xl border border-border/60 bg-surface p-4"
-      >
-        <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-          Today's phrase · {french_level}
-        </p>
-        <p className="mt-1 text-xl font-bold leading-snug">{phrase.french}</p>
-        <p className="mt-1 text-sm text-muted-foreground">{phrase.translation}</p>
-      </section>
+      <TodaysPhraseCard french={phrase.french} translation={phrase.translation} level={french_level} />
+
+      <section aria-labelledby="daily-tasks-heading" className="space-y-3">
+        <div className="flex items-baseline justify-between px-1">
+          <h2
+            id="daily-tasks-heading"
+            className="text-sm font-semibold uppercase tracking-widest text-muted-foreground"
+          >
+            Today's plan
+          </h2>
 
       <section aria-labelledby="daily-tasks-heading" className="space-y-3">
         <div className="flex items-baseline justify-between px-1">
