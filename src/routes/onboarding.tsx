@@ -123,13 +123,17 @@ function OnboardingPage() {
   }, [goal, level, painPoint, audioAnswer, target]);
 
   // Auto-advance 400ms after selecting an option (except on the final step).
-  useEffect(() => {
-    if (!canProceed || step === 4 || submitting) return;
-    const t = window.setTimeout(() => {
-      setStep((s) => (s + 1) as StepId);
+  // Explicit trigger (not derived from state) so pressing Back doesn't re-fire.
+  const scheduleAdvance = (nextStep: StepId) => {
+    if (nextStep > 4) return;
+    window.setTimeout(() => {
+      setStep((s) => (s === nextStep - 1 ? nextStep : s));
     }, 400);
-    return () => window.clearTimeout(t);
-  }, [canProceed, step, submitting]);
+  };
+  const pickAndAdvance = <T,>(setter: (v: T) => void, from: StepId) => (v: T) => {
+    setter(v);
+    if (from < 4) scheduleAdvance((from + 1) as StepId);
+  };
 
   const handleNext = async () => {
     if (!canProceed) return;
