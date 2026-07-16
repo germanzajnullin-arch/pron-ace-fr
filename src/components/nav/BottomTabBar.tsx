@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Calendar, Mic, TrendingUp } from "lucide-react";
+import { Sparkles, Mic, TrendingUp } from "lucide-react";
 import type { ComponentType, SVGProps } from "react";
 import { TABS } from "@/config/constants";
 import { cn } from "@/lib/utils";
@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 type IconCmp = ComponentType<SVGProps<SVGSVGElement>>;
 
 const ICONS: Record<(typeof TABS)[number]["id"], IconCmp> = {
-  today: Calendar,
+  "daily-focus": Sparkles,
   practice: Mic,
   progress: TrendingUp,
 };

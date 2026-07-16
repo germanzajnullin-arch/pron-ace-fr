@@ -9,10 +9,10 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TodayRouteImport } from './routes/today'
 import { Route as ProgressRouteImport } from './routes/progress'
 import { Route as PracticeRouteImport } from './routes/practice'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as DailyFocusRouteImport } from './routes/daily-focus'
 import { Route as CustomTextRouteImport } from './routes/custom-text'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AiChatRouteImport } from './routes/ai-chat'
@@ -20,11 +20,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ModuleModuleIdRouteImport } from './routes/module.$moduleId'
 import { Route as LessonLessonIdRouteImport } from './routes/lesson.$lessonId'
 
-const TodayRoute = TodayRouteImport.update({
-  id: '/today',
-  path: '/today',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ProgressRoute = ProgressRouteImport.update({
   id: '/progress',
   path: '/progress',
@@ -38,6 +33,11 @@ const PracticeRoute = PracticeRouteImport.update({
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DailyFocusRoute = DailyFocusRouteImport.update({
+  id: '/daily-focus',
+  path: '/daily-focus',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CustomTextRoute = CustomTextRouteImport.update({
@@ -76,10 +76,10 @@ export interface FileRoutesByFullPath {
   '/ai-chat': typeof AiChatRoute
   '/auth': typeof AuthRoute
   '/custom-text': typeof CustomTextRoute
+  '/daily-focus': typeof DailyFocusRoute
   '/onboarding': typeof OnboardingRoute
   '/practice': typeof PracticeRoute
   '/progress': typeof ProgressRoute
-  '/today': typeof TodayRoute
   '/lesson/$lessonId': typeof LessonLessonIdRoute
   '/module/$moduleId': typeof ModuleModuleIdRoute
 }
@@ -88,10 +88,10 @@ export interface FileRoutesByTo {
   '/ai-chat': typeof AiChatRoute
   '/auth': typeof AuthRoute
   '/custom-text': typeof CustomTextRoute
+  '/daily-focus': typeof DailyFocusRoute
   '/onboarding': typeof OnboardingRoute
   '/practice': typeof PracticeRoute
   '/progress': typeof ProgressRoute
-  '/today': typeof TodayRoute
   '/lesson/$lessonId': typeof LessonLessonIdRoute
   '/module/$moduleId': typeof ModuleModuleIdRoute
 }
@@ -101,10 +101,10 @@ export interface FileRoutesById {
   '/ai-chat': typeof AiChatRoute
   '/auth': typeof AuthRoute
   '/custom-text': typeof CustomTextRoute
+  '/daily-focus': typeof DailyFocusRoute
   '/onboarding': typeof OnboardingRoute
   '/practice': typeof PracticeRoute
   '/progress': typeof ProgressRoute
-  '/today': typeof TodayRoute
   '/lesson/$lessonId': typeof LessonLessonIdRoute
   '/module/$moduleId': typeof ModuleModuleIdRoute
 }
@@ -115,10 +115,10 @@ export interface FileRouteTypes {
     | '/ai-chat'
     | '/auth'
     | '/custom-text'
+    | '/daily-focus'
     | '/onboarding'
     | '/practice'
     | '/progress'
-    | '/today'
     | '/lesson/$lessonId'
     | '/module/$moduleId'
   fileRoutesByTo: FileRoutesByTo
@@ -127,10 +127,10 @@ export interface FileRouteTypes {
     | '/ai-chat'
     | '/auth'
     | '/custom-text'
+    | '/daily-focus'
     | '/onboarding'
     | '/practice'
     | '/progress'
-    | '/today'
     | '/lesson/$lessonId'
     | '/module/$moduleId'
   id:
@@ -139,10 +139,10 @@ export interface FileRouteTypes {
     | '/ai-chat'
     | '/auth'
     | '/custom-text'
+    | '/daily-focus'
     | '/onboarding'
     | '/practice'
     | '/progress'
-    | '/today'
     | '/lesson/$lessonId'
     | '/module/$moduleId'
   fileRoutesById: FileRoutesById
@@ -152,23 +152,16 @@ export interface RootRouteChildren {
   AiChatRoute: typeof AiChatRoute
   AuthRoute: typeof AuthRoute
   CustomTextRoute: typeof CustomTextRoute
+  DailyFocusRoute: typeof DailyFocusRoute
   OnboardingRoute: typeof OnboardingRoute
   PracticeRoute: typeof PracticeRoute
   ProgressRoute: typeof ProgressRoute
-  TodayRoute: typeof TodayRoute
   LessonLessonIdRoute: typeof LessonLessonIdRoute
   ModuleModuleIdRoute: typeof ModuleModuleIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/today': {
-      id: '/today'
-      path: '/today'
-      fullPath: '/today'
-      preLoaderRoute: typeof TodayRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/progress': {
       id: '/progress'
       path: '/progress'
@@ -188,6 +181,13 @@ declare module '@tanstack/react-router' {
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/daily-focus': {
+      id: '/daily-focus'
+      path: '/daily-focus'
+      fullPath: '/daily-focus'
+      preLoaderRoute: typeof DailyFocusRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/custom-text': {
@@ -240,10 +240,10 @@ const rootRouteChildren: RootRouteChildren = {
   AiChatRoute: AiChatRoute,
   AuthRoute: AuthRoute,
   CustomTextRoute: CustomTextRoute,
+  DailyFocusRoute: DailyFocusRoute,
   OnboardingRoute: OnboardingRoute,
   PracticeRoute: PracticeRoute,
   ProgressRoute: ProgressRoute,
-  TodayRoute: TodayRoute,
   LessonLessonIdRoute: LessonLessonIdRoute,
   ModuleModuleIdRoute: ModuleModuleIdRoute,
 }
