@@ -131,6 +131,7 @@ function OnboardingPage() {
       setSubmitting(false);
       return;
     }
+    setOnboardingCompleted(true);
     await refetch();
     router.navigate({ to: "/daily-focus" });
   };
