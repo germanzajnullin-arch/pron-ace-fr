@@ -8,6 +8,9 @@ import {
 } from "@/lib/personalization";
 import { setOnboardingCompleted, isOnboardingCompleted } from "@/lib/onboarding";
 import { createLogger } from "@/services/logger";
+import type { Database } from "@/integrations/supabase/types";
+
+type ProfilePatch = Database["public"]["Tables"]["profiles"]["Update"];
 
 const log = createLogger("AnswersSync");
 
