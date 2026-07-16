@@ -28,6 +28,7 @@ const WEEK_MINUTES = 42;
 
 function ProgressPage() {
   const { profile } = useProfile();
+  const router = useRouter();
   const dailyGoal = profile?.daily_goal_minutes ?? 10;
   const dailyProgress = Math.min(1, MINUTES_DONE_TODAY / dailyGoal);
 
