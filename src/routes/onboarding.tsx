@@ -10,6 +10,7 @@ import {
 } from "@/hooks/useProfile";
 import { APP_NAME } from "@/config/constants";
 import { cn } from "@/lib/utils";
+import { setOnboardingCompleted } from "@/lib/onboarding";
 
 export const Route = createFileRoute("/onboarding")({
   head: () => ({ meta: [{ title: `Get started — ${APP_NAME}` }] }),
