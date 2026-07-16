@@ -100,6 +100,17 @@ function AiChatPage() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, pending]);
 
+  // Auto-launch a canned opening user turn when arriving with ?prompt=…
+  useEffect(() => {
+    if (autoLaunchedRef.current) return;
+    if (search.prompt === DAILY_FOCUS.aiIntroPromptKey) {
+      autoLaunchedRef.current = true;
+      send(DAILY_FOCUS.aiIntroPromptText);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search.prompt]);
+
+
   const isRecording = recorder.state === "recording";
 
   return (
