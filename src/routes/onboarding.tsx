@@ -264,7 +264,7 @@ function OnboardingPage() {
               <button
                 key={o.value}
                 type="button"
-                onClick={() => setAudioAnswer(o.value)}
+                onClick={() => pickAndAdvance(setAudioAnswer, 3)(o.value)}
                 className={cn(
                   "rounded-2xl border p-4 text-left transition-all duration-300",
                   audioAnswer === o.value
