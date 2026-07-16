@@ -29,6 +29,7 @@ export const Route = createFileRoute("/lesson/$lessonId")({
 function LessonPage() {
   const { lessonId } = Route.useParams();
   const router = useRouter();
+  const navigate = useNavigate();
   const { session } = useAuthSession();
   const save = useServerFn(saveAttempt);
   const [savedNote, setSavedNote] = useState<string | null>(null);
