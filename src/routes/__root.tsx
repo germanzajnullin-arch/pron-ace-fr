@@ -17,6 +17,7 @@ import { APP_NAME } from "@/config/constants";
 import { useProfile } from "@/hooks/useProfile";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { isOnboardingCompleted, ONBOARDING_STORAGE_KEY } from "@/lib/onboarding";
+import { useAnswersSync } from "@/hooks/useAnswersSync";
 
 
 function NotFoundComponent() {
