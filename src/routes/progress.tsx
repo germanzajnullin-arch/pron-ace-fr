@@ -1,20 +1,35 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
+import { Flame, Target, Clock } from "lucide-react";
 import { APP_NAME } from "@/config/constants";
 import { MOCK_RECENT_ATTEMPTS } from "@/config/mockData";
 import { ProgressBar } from "@/components/progress/ProgressBar";
+import { useProfile } from "@/hooks/useProfile";
 
 export const Route = createFileRoute("/progress")({
   head: () => ({
     meta: [
       { title: `Progress — ${APP_NAME}` },
-      { name: "description", content: "Your French pronunciation attempts and score history." },
+      {
+        name: "description",
+        content:
+          "Track your daily goal, streak, weekly practice minutes, and full attempt history.",
+      },
     ],
   }),
   component: ProgressPage,
 });
 
+// MVP placeholders — will be replaced by real reads from user_attempts once wired.
+const MINUTES_DONE_TODAY = 4;
+const STREAK_DAYS = 3;
+const WEEK_MINUTES = 42;
+
 function ProgressPage() {
+  const { profile } = useProfile();
+  const dailyGoal = profile?.daily_goal_minutes ?? 10;
+  const dailyProgress = Math.min(1, MINUTES_DONE_TODAY / dailyGoal);
+
   const attempts = MOCK_RECENT_ATTEMPTS;
   const avg =
     attempts.length === 0
@@ -27,11 +42,50 @@ function ProgressPage() {
         <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
           Progress
         </p>
-        <h1 className="text-3xl font-bold">Your <span className="text-gradient-neon">journey</span></h1>
+        <h1 className="text-3xl font-bold">
+          Your <span className="text-gradient-neon">journey</span>
+        </h1>
       </header>
 
-      <section className="rounded-3xl border border-white/10 bg-gradient-surface p-5">
-        <p className="text-sm text-muted-foreground">Average score</p>
+      {/* Daily goal */}
+      <section className="rounded-3xl border border-white/10 bg-gradient-surface p-5 shadow-elevated">
+        <div className="flex items-center gap-3">
+          <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/15 text-primary">
+            <Target className="h-5 w-5" aria-hidden />
+          </span>
+          <div>
+            <p className="text-sm text-muted-foreground">Daily goal</p>
+            <p className="text-lg font-semibold">
+              {MINUTES_DONE_TODAY} / {dailyGoal} minutes
+            </p>
+          </div>
+        </div>
+        <div className="mt-4">
+          <ProgressBar value={dailyProgress} />
+        </div>
+      </section>
+
+      {/* Streak + weekly */}
+      <div className="grid grid-cols-2 gap-3">
+        <MetricCard
+          icon={<Flame className="h-4 w-4 text-accent" aria-hidden />}
+          label="Streak"
+          value={STREAK_DAYS}
+          suffix=""
+          hint="days in a row"
+        />
+        <MetricCard
+          icon={<Clock className="h-4 w-4 text-primary" aria-hidden />}
+          label="This week"
+          value={WEEK_MINUTES}
+          suffix="m"
+          hint="of focused practice"
+        />
+      </div>
+
+      {/* Average score */}
+      <section className="rounded-3xl border border-white/10 bg-surface p-5">
+        <p className="text-sm text-muted-foreground">Average pronunciation score</p>
         <p className="mt-1 text-4xl font-bold tabular-nums">
           {Math.round(avg * 100)}%
         </p>
@@ -40,6 +94,7 @@ function ProgressPage() {
         </div>
       </section>
 
+      {/* Recent attempts */}
       <section className="space-y-3">
         <h2 className="px-1 text-sm font-semibold uppercase tracking-widest text-muted-foreground">
           Recent attempts
@@ -68,5 +123,33 @@ function ProgressPage() {
         Sign in on the Practice tab to sync real attempts across devices.
       </p>
     </main>
+  );
+}
+
+function MetricCard({
+  icon,
+  label,
+  value,
+  suffix,
+  hint,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: number;
+  suffix: string;
+  hint: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-surface p-4">
+      <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground">
+        {icon}
+        {label}
+      </div>
+      <p className="mt-2 text-3xl font-bold tabular-nums">
+        {value}
+        {suffix && <span className="text-lg text-muted-foreground">{suffix}</span>}
+      </p>
+      <p className="text-xs text-muted-foreground">{hint}</p>
+    </div>
   );
 }
