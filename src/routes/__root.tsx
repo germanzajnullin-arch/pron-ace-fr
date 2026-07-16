@@ -8,7 +8,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -16,6 +16,7 @@ import { BottomTabBar } from "@/components/nav/BottomTabBar";
 import { APP_NAME } from "@/config/constants";
 import { useProfile } from "@/hooks/useProfile";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { isOnboardingCompleted, ONBOARDING_STORAGE_KEY } from "@/lib/onboarding";
 
 
 function NotFoundComponent() {
