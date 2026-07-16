@@ -167,6 +167,11 @@
   100% { background-position: 200% 0; }
 }
 
+@keyframes wave {
+  0%, 100% { transform: scaleY(0.4); }
+  50% { transform: scaleY(1); }
+}
+
 @utility animate-pulse-neon {
   animation: pulse-neon 1.6s ease-out infinite;
 }
