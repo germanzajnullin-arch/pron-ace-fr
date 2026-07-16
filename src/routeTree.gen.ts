@@ -9,38 +9,188 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TodayRouteImport } from './routes/today'
+import { Route as ProgressRouteImport } from './routes/progress'
+import { Route as PracticeRouteImport } from './routes/practice'
+import { Route as CustomTextRouteImport } from './routes/custom-text'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AiChatRouteImport } from './routes/ai-chat'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ModuleModuleIdRouteImport } from './routes/module.$moduleId'
+import { Route as LessonLessonIdRouteImport } from './routes/lesson.$lessonId'
 
+const TodayRoute = TodayRouteImport.update({
+  id: '/today',
+  path: '/today',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProgressRoute = ProgressRouteImport.update({
+  id: '/progress',
+  path: '/progress',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PracticeRoute = PracticeRouteImport.update({
+  id: '/practice',
+  path: '/practice',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CustomTextRoute = CustomTextRouteImport.update({
+  id: '/custom-text',
+  path: '/custom-text',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiChatRoute = AiChatRouteImport.update({
+  id: '/ai-chat',
+  path: '/ai-chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ModuleModuleIdRoute = ModuleModuleIdRouteImport.update({
+  id: '/module/$moduleId',
+  path: '/module/$moduleId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LessonLessonIdRoute = LessonLessonIdRouteImport.update({
+  id: '/lesson/$lessonId',
+  path: '/lesson/$lessonId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ai-chat': typeof AiChatRoute
+  '/auth': typeof AuthRoute
+  '/custom-text': typeof CustomTextRoute
+  '/practice': typeof PracticeRoute
+  '/progress': typeof ProgressRoute
+  '/today': typeof TodayRoute
+  '/lesson/$lessonId': typeof LessonLessonIdRoute
+  '/module/$moduleId': typeof ModuleModuleIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ai-chat': typeof AiChatRoute
+  '/auth': typeof AuthRoute
+  '/custom-text': typeof CustomTextRoute
+  '/practice': typeof PracticeRoute
+  '/progress': typeof ProgressRoute
+  '/today': typeof TodayRoute
+  '/lesson/$lessonId': typeof LessonLessonIdRoute
+  '/module/$moduleId': typeof ModuleModuleIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/ai-chat': typeof AiChatRoute
+  '/auth': typeof AuthRoute
+  '/custom-text': typeof CustomTextRoute
+  '/practice': typeof PracticeRoute
+  '/progress': typeof ProgressRoute
+  '/today': typeof TodayRoute
+  '/lesson/$lessonId': typeof LessonLessonIdRoute
+  '/module/$moduleId': typeof ModuleModuleIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/ai-chat'
+    | '/auth'
+    | '/custom-text'
+    | '/practice'
+    | '/progress'
+    | '/today'
+    | '/lesson/$lessonId'
+    | '/module/$moduleId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/ai-chat'
+    | '/auth'
+    | '/custom-text'
+    | '/practice'
+    | '/progress'
+    | '/today'
+    | '/lesson/$lessonId'
+    | '/module/$moduleId'
+  id:
+    | '__root__'
+    | '/'
+    | '/ai-chat'
+    | '/auth'
+    | '/custom-text'
+    | '/practice'
+    | '/progress'
+    | '/today'
+    | '/lesson/$lessonId'
+    | '/module/$moduleId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AiChatRoute: typeof AiChatRoute
+  AuthRoute: typeof AuthRoute
+  CustomTextRoute: typeof CustomTextRoute
+  PracticeRoute: typeof PracticeRoute
+  ProgressRoute: typeof ProgressRoute
+  TodayRoute: typeof TodayRoute
+  LessonLessonIdRoute: typeof LessonLessonIdRoute
+  ModuleModuleIdRoute: typeof ModuleModuleIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/today': {
+      id: '/today'
+      path: '/today'
+      fullPath: '/today'
+      preLoaderRoute: typeof TodayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/progress': {
+      id: '/progress'
+      path: '/progress'
+      fullPath: '/progress'
+      preLoaderRoute: typeof ProgressRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/practice': {
+      id: '/practice'
+      path: '/practice'
+      fullPath: '/practice'
+      preLoaderRoute: typeof PracticeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/custom-text': {
+      id: '/custom-text'
+      path: '/custom-text'
+      fullPath: '/custom-text'
+      preLoaderRoute: typeof CustomTextRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai-chat': {
+      id: '/ai-chat'
+      path: '/ai-chat'
+      fullPath: '/ai-chat'
+      preLoaderRoute: typeof AiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +198,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/module/$moduleId': {
+      id: '/module/$moduleId'
+      path: '/module/$moduleId'
+      fullPath: '/module/$moduleId'
+      preLoaderRoute: typeof ModuleModuleIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lesson/$lessonId': {
+      id: '/lesson/$lessonId'
+      path: '/lesson/$lessonId'
+      fullPath: '/lesson/$lessonId'
+      preLoaderRoute: typeof LessonLessonIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AiChatRoute: AiChatRoute,
+  AuthRoute: AuthRoute,
+  CustomTextRoute: CustomTextRoute,
+  PracticeRoute: PracticeRoute,
+  ProgressRoute: ProgressRoute,
+  TodayRoute: TodayRoute,
+  LessonLessonIdRoute: LessonLessonIdRoute,
+  ModuleModuleIdRoute: ModuleModuleIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
