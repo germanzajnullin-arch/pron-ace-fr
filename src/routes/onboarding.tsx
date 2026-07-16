@@ -221,7 +221,7 @@ function OnboardingPage() {
               <ChoiceCard
                 key={o.value}
                 selected={level === o.value}
-                onClick={() => setLevel(o.value)}
+                onClick={() => pickAndAdvance(setLevel, 1)(o.value)}
                 label={o.label}
                 hint={o.hint}
                 emoji={o.emoji}
