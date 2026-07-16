@@ -14,7 +14,107 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      lessons: {
+        Row: {
+          audio_example_url: string | null
+          category: Database["public"]["Enums"]["lesson_category"]
+          created_at: string
+          french_text: string
+          hints: string[]
+          id: string
+          order_index: number
+          title: string
+          translation: string | null
+        }
+        Insert: {
+          audio_example_url?: string | null
+          category: Database["public"]["Enums"]["lesson_category"]
+          created_at?: string
+          french_text: string
+          hints?: string[]
+          id?: string
+          order_index?: number
+          title: string
+          translation?: string | null
+        }
+        Update: {
+          audio_example_url?: string | null
+          category?: Database["public"]["Enums"]["lesson_category"]
+          created_at?: string
+          french_text?: string
+          hints?: string[]
+          id?: string
+          order_index?: number
+          title?: string
+          translation?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          daily_goal_minutes: number
+          display_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          daily_goal_minutes?: number
+          display_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          daily_goal_minutes?: number
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_attempts: {
+        Row: {
+          created_at: string
+          duration_ms: number | null
+          expected_text: string
+          id: string
+          lesson_id: string | null
+          score: number
+          transcript: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_ms?: number | null
+          expected_text: string
+          id?: string
+          lesson_id?: string | null
+          score: number
+          transcript: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number | null
+          expected_text?: string
+          id?: string
+          lesson_id?: string | null
+          score?: number
+          transcript?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_attempts_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +123,13 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      lesson_category:
+        | "phonetics_basics"
+        | "nasal_vowels"
+        | "french_r_silent"
+        | "liaison"
+        | "minimal_pairs"
+        | "custom"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +256,15 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      lesson_category: [
+        "phonetics_basics",
+        "nasal_vowels",
+        "french_r_silent",
+        "liaison",
+        "minimal_pairs",
+        "custom",
+      ],
+    },
   },
 } as const
