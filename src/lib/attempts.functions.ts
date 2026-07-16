@@ -8,6 +8,9 @@ const AttemptInput = z.object({
   transcript: z.string().trim().max(1000),
   score: z.number().min(0).max(1),
   durationMs: z.number().int().min(0).max(300_000).nullable(),
+  accuracyScore: z.number().min(0).max(1).nullable().optional(),
+  fluencyScore: z.number().min(0).max(1).nullable().optional(),
+  completenessScore: z.number().min(0).max(1).nullable().optional(),
 });
 
 export const saveAttempt = createServerFn({ method: "POST" })
@@ -23,6 +26,9 @@ export const saveAttempt = createServerFn({ method: "POST" })
         transcript: data.transcript,
         score: data.score,
         duration_ms: data.durationMs,
+        accuracy_score: data.accuracyScore ?? null,
+        fluency_score: data.fluencyScore ?? null,
+        completeness_score: data.completenessScore ?? null,
       })
       .select()
       .single();
