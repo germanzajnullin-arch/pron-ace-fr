@@ -323,7 +323,7 @@ function OnboardingPage() {
             className={cn(
               "flex flex-1 items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition-all duration-300",
               canProceed && !submitting
-                ? "bg-gradient-neon text-background shadow-neon"
+                ? "bg-yellow-500 text-background shadow-lg"
                 : "cursor-not-allowed bg-surface-2 text-muted-foreground",
             )}
           >
