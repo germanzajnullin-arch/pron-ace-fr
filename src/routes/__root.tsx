@@ -17,6 +17,7 @@ import { APP_NAME } from "@/config/constants";
 import { useProfile } from "@/hooks/useProfile";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { isOnboardingCompleted, ONBOARDING_STORAGE_KEY } from "@/lib/onboarding";
+import { useAnswersSync } from "@/hooks/useAnswersSync";
 
 
 function NotFoundComponent() {
@@ -135,6 +136,7 @@ function OnboardingGate() {
   const router = useRouter();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { profile, session, loading } = useProfile();
+  useAnswersSync();
 
   // Read localStorage after mount (SSR-safe) and stay in sync across tabs.
   const [localCompleted, setLocalCompleted] = useState<boolean>(true);
