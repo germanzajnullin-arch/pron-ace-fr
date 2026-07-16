@@ -60,6 +60,15 @@ function AiChatPage() {
   const [messages, setMessages] = useState<ChatMessage[]>(() => [
     { id: "opener", role: "assistant", text: opener },
   ]);
+
+  // Refresh the opener if personalization data hydrates after mount (guests).
+  useEffect(() => {
+    setMessages((prev) =>
+      prev.length === 1 && prev[0].id === "opener"
+        ? [{ id: "opener", role: "assistant", text: opener }]
+        : prev,
+    );
+  }, [opener]);
   const [pending, setPending] = useState(false);
   const [draft, setDraft] = useState("");
   const scrollRef = useRef<HTMLDivElement | null>(null);
