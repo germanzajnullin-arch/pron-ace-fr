@@ -136,6 +136,7 @@ function OnboardingGate() {
   const router = useRouter();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { profile, session, loading } = useProfile();
+  useAnswersSync();
 
   // Read localStorage after mount (SSR-safe) and stay in sync across tabs.
   const [localCompleted, setLocalCompleted] = useState<boolean>(true);
