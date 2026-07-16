@@ -9,7 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TodayRouteImport } from './routes/today'
 import { Route as ProgressRouteImport } from './routes/progress'
 import { Route as PracticeRouteImport } from './routes/practice'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
@@ -21,11 +20,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ModuleModuleIdRouteImport } from './routes/module.$moduleId'
 import { Route as LessonLessonIdRouteImport } from './routes/lesson.$lessonId'
 
-const TodayRoute = TodayRouteImport.update({
-  id: '/today',
-  path: '/today',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ProgressRoute = ProgressRouteImport.update({
   id: '/progress',
   path: '/progress',
@@ -86,7 +80,6 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof OnboardingRoute
   '/practice': typeof PracticeRoute
   '/progress': typeof ProgressRoute
-  '/today': typeof TodayRoute
   '/lesson/$lessonId': typeof LessonLessonIdRoute
   '/module/$moduleId': typeof ModuleModuleIdRoute
 }
@@ -99,7 +92,6 @@ export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingRoute
   '/practice': typeof PracticeRoute
   '/progress': typeof ProgressRoute
-  '/today': typeof TodayRoute
   '/lesson/$lessonId': typeof LessonLessonIdRoute
   '/module/$moduleId': typeof ModuleModuleIdRoute
 }
@@ -113,7 +105,6 @@ export interface FileRoutesById {
   '/onboarding': typeof OnboardingRoute
   '/practice': typeof PracticeRoute
   '/progress': typeof ProgressRoute
-  '/today': typeof TodayRoute
   '/lesson/$lessonId': typeof LessonLessonIdRoute
   '/module/$moduleId': typeof ModuleModuleIdRoute
 }
@@ -128,7 +119,6 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/practice'
     | '/progress'
-    | '/today'
     | '/lesson/$lessonId'
     | '/module/$moduleId'
   fileRoutesByTo: FileRoutesByTo
@@ -141,7 +131,6 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/practice'
     | '/progress'
-    | '/today'
     | '/lesson/$lessonId'
     | '/module/$moduleId'
   id:
@@ -154,7 +143,6 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/practice'
     | '/progress'
-    | '/today'
     | '/lesson/$lessonId'
     | '/module/$moduleId'
   fileRoutesById: FileRoutesById
@@ -168,20 +156,12 @@ export interface RootRouteChildren {
   OnboardingRoute: typeof OnboardingRoute
   PracticeRoute: typeof PracticeRoute
   ProgressRoute: typeof ProgressRoute
-  TodayRoute: typeof TodayRoute
   LessonLessonIdRoute: typeof LessonLessonIdRoute
   ModuleModuleIdRoute: typeof ModuleModuleIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/today': {
-      id: '/today'
-      path: '/today'
-      fullPath: '/today'
-      preLoaderRoute: typeof TodayRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/progress': {
       id: '/progress'
       path: '/progress'
@@ -264,7 +244,6 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingRoute: OnboardingRoute,
   PracticeRoute: PracticeRoute,
   ProgressRoute: ProgressRoute,
-  TodayRoute: TodayRoute,
   LessonLessonIdRoute: LessonLessonIdRoute,
   ModuleModuleIdRoute: ModuleModuleIdRoute,
 }
