@@ -12,7 +12,7 @@ import { useRecorder } from "@/hooks/useRecorder";
 import { useAuthSession } from "@/hooks/useAuthSession";
 import { PhraseDisplay } from "@/components/lesson/PhraseDisplay";
 import { RecordButton } from "@/components/lesson/RecordButton";
-import { ScoreCard } from "@/components/lesson/ScoreCard";
+import { MetricsBreakdown } from "@/components/lesson/MetricsBreakdown";
 import { MicPermissionAlert } from "@/components/feedback/MicPermissionAlert";
 import { SkeletonBlock } from "@/components/feedback/SkeletonBlock";
 import { APP_NAME } from "@/config/constants";
