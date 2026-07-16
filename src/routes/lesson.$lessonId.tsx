@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { getLessonById, listLessonsByCategory } from "@/lib/lessons.functions";
 import { saveAttempt } from "@/lib/attempts.functions";
 import { useServerFn } from "@tanstack/react-start";
@@ -15,6 +15,7 @@ import { MicPermissionAlert } from "@/components/feedback/MicPermissionAlert";
 import { SkeletonBlock } from "@/components/feedback/SkeletonBlock";
 import { APP_NAME } from "@/config/constants";
 import { createLogger } from "@/services/logger";
+import { cn } from "@/lib/utils";
 
 const log = createLogger("LessonRoute");
 
@@ -51,10 +52,16 @@ function LessonPage() {
     enabled: !!lesson,
   });
 
-  const nextLesson = useMemo(() => {
-    if (!lesson || !siblings) return null;
+  const { prevLesson, nextLesson, positionLabel } = useMemo(() => {
+    if (!lesson || !siblings) {
+      return { prevLesson: null, nextLesson: null, positionLabel: null };
+    }
     const idx = siblings.findIndex((s) => s.id === lesson.id);
-    return idx >= 0 && idx + 1 < siblings.length ? siblings[idx + 1] : null;
+    return {
+      prevLesson: idx > 0 ? siblings[idx - 1] : null,
+      nextLesson: idx >= 0 && idx + 1 < siblings.length ? siblings[idx + 1] : null,
+      positionLabel: idx >= 0 ? `${idx + 1} / ${siblings.length}` : null,
+    };
   }, [lesson, siblings]);
 
   const recorder = useRecorder({
@@ -85,40 +92,21 @@ function LessonPage() {
 
   return (
     <main className="flex-1 px-4 pt-6 pb-6 space-y-5">
-      <div className="flex items-center justify-between">
-        <button
-          type="button"
-          onClick={() => router.history.back()}
-          className="flex items-center gap-1 rounded-full px-3 py-1.5 text-sm text-muted-foreground hover:bg-surface hover:text-foreground"
-        >
-          <ChevronLeft className="h-4 w-4" aria-hidden />
-          Back
-        </button>
-        {nextLesson ? (
-          <Link
-            to="/lesson/$lessonId"
-            params={{ lessonId: nextLesson.id }}
-            className="flex items-center gap-1 rounded-full px-3 py-1.5 text-sm text-muted-foreground hover:bg-surface hover:text-foreground"
-          >
-            Next
-            <ChevronRight className="h-4 w-4" aria-hidden />
-          </Link>
-        ) : null}
-      </div>
+      {/* Compact header — position indicator only; nav lives at the bottom */}
+      {positionLabel ? (
+        <p className="text-center text-xs font-medium uppercase tracking-widest text-muted-foreground">
+          Lesson {positionLabel}
+        </p>
+      ) : null}
 
       {isLoading || !lesson ? (
-        <SkeletonBlock className="h-48 w-full" />
+        <SkeletonBlock className="h-56 w-full" />
       ) : (
         <PhraseDisplay
           title={lesson.title}
           frenchText={lesson.frenchText}
           translation={lesson.translation}
           hints={lesson.hints}
-          audioAvailable={!!lesson.audioExampleUrl}
-          onPlayAudio={() => {
-            if (!lesson.audioExampleUrl) return;
-            new Audio(lesson.audioExampleUrl).play().catch((e) => log.warn("audio play failed", e));
-          }}
         />
       )}
 
@@ -151,6 +139,13 @@ function LessonPage() {
         />
       </div>
 
+      {/* Ergonomic bottom nav — thumb-reach zone */}
+      <LessonNavBar
+        prevHref={prevLesson?.id ?? null}
+        nextHref={nextLesson?.id ?? null}
+        onBack={() => router.history.back()}
+      />
+
       {!session ? (
         <p className="text-center text-xs text-muted-foreground">
           <Link to="/auth" className="text-primary underline-offset-2 hover:underline">
@@ -160,5 +155,60 @@ function LessonPage() {
         </p>
       ) : null}
     </main>
+  );
+}
+
+interface LessonNavBarProps {
+  prevHref: string | null;
+  nextHref: string | null;
+  onBack: () => void;
+}
+
+function LessonNavBar({ prevHref, nextHref, onBack }: LessonNavBarProps) {
+  return (
+    <nav
+      aria-label="Lesson navigation"
+      className="flex items-center justify-between gap-3 pt-3"
+    >
+      {prevHref ? (
+        <Link
+          to="/lesson/$lessonId"
+          params={{ lessonId: prevHref }}
+          aria-label="Previous lesson"
+          className="flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl border border-border/60 bg-surface text-sm font-semibold text-foreground transition-colors hover:bg-surface-2 active:scale-[0.98]"
+        >
+          <ArrowLeft className="h-5 w-5" aria-hidden />
+          Previous
+        </Link>
+      ) : (
+        <button
+          type="button"
+          onClick={onBack}
+          aria-label="Back"
+          className="flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl border border-border/60 bg-surface text-sm font-semibold text-foreground transition-colors hover:bg-surface-2 active:scale-[0.98]"
+        >
+          <ArrowLeft className="h-5 w-5" aria-hidden />
+          Back
+        </button>
+      )}
+      <Link
+        to="/lesson/$lessonId"
+        params={{ lessonId: nextHref ?? "" }}
+        aria-label="Next lesson"
+        disabled={!nextHref}
+        onClick={(e) => {
+          if (!nextHref) e.preventDefault();
+        }}
+        className={cn(
+          "flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl text-sm font-semibold transition-transform active:scale-[0.98]",
+          nextHref
+            ? "bg-gradient-neon text-background shadow-neon"
+            : "cursor-not-allowed border border-border/60 bg-surface text-muted-foreground",
+        )}
+      >
+        Next
+        <ArrowRight className="h-5 w-5" aria-hidden />
+      </Link>
+    </nav>
   );
 }
