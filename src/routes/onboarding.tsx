@@ -107,6 +107,30 @@ function OnboardingPage() {
     }
   };
 
+  const buildAnswers = (): OnboardingAnswers => ({
+    goal,
+    french_level: level ?? "A1",
+    pain_point: painPoint,
+    audio_challenge_answer: audioAnswer,
+    daily_goal_minutes: Number(target ?? "10"),
+  });
+
+  // Persist the consolidated answers on every change so a refresh mid-quiz
+  // doesn't lose progress.
+  useEffect(() => {
+    writeLocalAnswers(buildAnswers());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [goal, level, painPoint, audioAnswer, target]);
+
+  // Auto-advance 400ms after selecting an option (except on the final step).
+  useEffect(() => {
+    if (!canProceed || step === 4 || submitting) return;
+    const t = window.setTimeout(() => {
+      setStep((s) => (s + 1) as StepId);
+    }, 400);
+    return () => window.clearTimeout(t);
+  }, [canProceed, step, submitting]);
+
   const handleNext = async () => {
     if (!canProceed) return;
     if (step < 4) {
@@ -116,21 +140,7 @@ function OnboardingPage() {
     setSubmitting(true);
     setError(null);
 
-    // Cache answers locally — usable by guests and syncable after future sign-in.
-    try {
-      window.localStorage.setItem(
-        "onboarding_answers",
-        JSON.stringify({
-          goal,
-          french_level: level ?? "A1",
-          pain_point: painPoint,
-          audio_challenge_answer: audioAnswer,
-          daily_goal_minutes: Number(target),
-        }),
-      );
-    } catch {
-      /* noop */
-    }
+    writeLocalAnswers(buildAnswers());
 
     if (session?.user) {
       const { error: updateError } = await supabase
