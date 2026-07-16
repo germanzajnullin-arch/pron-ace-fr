@@ -46,7 +46,7 @@ export const useAnswersSync = (): void => {
         if (readError) throw readError;
 
         // Only fill missing fields — never clobber values the user set on this device.
-        const patch: Record<string, unknown> = {};
+        const patch: ProfilePatch = {};
         if (!existing?.goal && answers.goal) patch.goal = answers.goal;
         if (!existing?.pain_point && answers.pain_point) patch.pain_point = answers.pain_point;
         if (!existing?.audio_challenge_answer && answers.audio_challenge_answer) {
