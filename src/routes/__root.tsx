@@ -150,15 +150,21 @@ function OnboardingGate() {
   }, [pathname]);
 
   const isPublic = pathname === "/auth" || pathname === "/onboarding";
-  const dbNeedsOnboarding = !!session && !!profile && !profile.onboarding_completed;
-  const needsOnboarding = !localCompleted || dbNeedsOnboarding;
+  // Guest-first: rely on the local flag. DB flag only *upgrades* the local one
+  // when the user is signed in — it never forces redirect on its own.
+  const needsOnboarding = !localCompleted;
 
   useEffect(() => {
     if (loading) return;
+    if (!localCompleted && !!session && !!profile && profile.onboarding_completed) {
+      // Signed-in user with a completed DB flag: mirror it locally.
+      // (The useEffect in onboarding.tsx also handles this on that route.)
+      return;
+    }
     if (needsOnboarding && !isPublic) {
       router.navigate({ to: "/onboarding" });
     }
-  }, [loading, needsOnboarding, isPublic, router]);
+  }, [loading, needsOnboarding, isPublic, router, localCompleted, session, profile]);
 
   const hideChrome = pathname === "/onboarding" || pathname === "/auth";
 
