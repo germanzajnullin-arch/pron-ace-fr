@@ -72,15 +72,14 @@ function OnboardingPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Guest-first: never redirect to /auth. If the DB flag is already true, skip ahead.
   useEffect(() => {
     if (loading) return;
-    if (!session) {
-      router.navigate({ to: "/auth" });
-    } else if (profile?.onboarding_completed) {
+    if (profile?.onboarding_completed) {
       setOnboardingCompleted(true);
       router.navigate({ to: "/daily-focus" });
     }
-  }, [loading, session, profile, router]);
+  }, [loading, profile, router]);
 
   const progress = ((step + 1) / TOTAL_STEPS) * 100;
 
@@ -113,27 +112,46 @@ function OnboardingPage() {
       setStep((s) => (s + 1) as StepId);
       return;
     }
-    if (!session?.user) return;
     setSubmitting(true);
     setError(null);
-    const { error: updateError } = await supabase
-      .from("profiles")
-      .update({
-        goal,
-        french_level: level ?? "A1",
-        pain_point: painPoint,
-        audio_challenge_answer: audioAnswer,
-        daily_goal_minutes: Number(target),
-        onboarding_completed: true,
-      })
-      .eq("id", session.user.id);
-    if (updateError) {
-      setError(updateError.message);
-      setSubmitting(false);
-      return;
+
+    // Cache answers locally — usable by guests and syncable after future sign-in.
+    try {
+      window.localStorage.setItem(
+        "onboarding_answers",
+        JSON.stringify({
+          goal,
+          french_level: level ?? "A1",
+          pain_point: painPoint,
+          audio_challenge_answer: audioAnswer,
+          daily_goal_minutes: Number(target),
+        }),
+      );
+    } catch {
+      /* noop */
     }
+
+    if (session?.user) {
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({
+          goal,
+          french_level: level ?? "A1",
+          pain_point: painPoint,
+          audio_challenge_answer: audioAnswer,
+          daily_goal_minutes: Number(target),
+          onboarding_completed: true,
+        })
+        .eq("id", session.user.id);
+      if (updateError) {
+        setError(updateError.message);
+        setSubmitting(false);
+        return;
+      }
+      await refetch();
+    }
+
     setOnboardingCompleted(true);
-    await refetch();
     router.navigate({ to: "/daily-focus" });
   };
 
@@ -141,7 +159,8 @@ function OnboardingPage() {
     if (step > 0) setStep((s) => (s - 1) as StepId);
   };
 
-  if (loading || !session) {
+  // Render immediately for guests; only briefly gate while an active session hydrates.
+  if (loading && session) {
     return (
       <main className="flex-1 flex items-center justify-center">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
