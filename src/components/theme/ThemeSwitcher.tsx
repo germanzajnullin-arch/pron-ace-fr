@@ -48,7 +48,7 @@ export function ThemeSwitcher({ className }: { className?: string }) {
         <div
           role="menu"
           aria-label="Theme options"
-          className="theme-switcher-menu absolute right-0 top-full z-40 mt-2 w-64 origin-top-right rounded-2xl border border-border/70 bg-surface p-2 shadow-elevated"
+          className="absolute right-0 top-full z-40 mt-2 w-64 origin-top-right animate-in fade-in slide-in-from-top-2 rounded-2xl border border-border/70 bg-surface p-2 shadow-elevated"
         >
           <p className="px-2 pt-1 pb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
             Theme
