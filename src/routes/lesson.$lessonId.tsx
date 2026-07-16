@@ -1,7 +1,7 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+import { ArrowLeft, ArrowRight, X } from "lucide-react";
 import { getLessonById, listLessonsByCategory } from "@/lib/lessons.functions";
 import { saveAttempt } from "@/lib/attempts.functions";
 import { useServerFn } from "@tanstack/react-start";
@@ -29,6 +29,7 @@ export const Route = createFileRoute("/lesson/$lessonId")({
 function LessonPage() {
   const { lessonId } = Route.useParams();
   const router = useRouter();
+  const navigate = useNavigate();
   const { session } = useAuthSession();
   const save = useServerFn(saveAttempt);
   const [savedNote, setSavedNote] = useState<string | null>(null);
@@ -90,14 +91,32 @@ function LessonPage() {
     },
   });
 
+  const exitLesson = useCallback(() => {
+    // Safely terminate any active recording/recognition + wipe local state,
+    // then return the user to the Daily Focus dashboard.
+    recorder.reset();
+    setSavedNote(null);
+    void navigate({ to: "/daily-focus" });
+  }, [navigate, recorder]);
+
   return (
-    <main className="flex-1 px-4 pt-6 pb-6 space-y-5">
-      {/* Compact header — position indicator only; nav lives at the bottom */}
-      {positionLabel ? (
-        <p className="text-center text-xs font-medium uppercase tracking-widest text-muted-foreground">
-          Lesson {positionLabel}
-        </p>
-      ) : null}
+    <main className="flex-1 px-4 pt-4 pb-6 space-y-5">
+      {/* Top bar — close (left) + position indicator (center) */}
+      <div className="relative flex h-11 items-center">
+        <button
+          type="button"
+          onClick={exitLesson}
+          aria-label="Close lesson and return to Daily Focus"
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-border/60 bg-surface text-foreground shadow-sm transition-all hover:bg-surface-2 active:scale-95"
+        >
+          <X className="h-5 w-5" aria-hidden />
+        </button>
+        {positionLabel ? (
+          <p className="pointer-events-none absolute left-1/2 -translate-x-1/2 text-xs font-medium uppercase tracking-widest text-muted-foreground">
+            Lesson {positionLabel}
+          </p>
+        ) : null}
+      </div>
 
       {isLoading || !lesson ? (
         <SkeletonBlock className="h-56 w-full" />

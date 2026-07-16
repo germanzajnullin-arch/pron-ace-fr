@@ -16,7 +16,7 @@ import { BottomTabBar } from "@/components/nav/BottomTabBar";
 import { APP_NAME } from "@/config/constants";
 import { useProfile } from "@/hooks/useProfile";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import { ThemePicker } from "@/components/theme/ThemePicker";
+
 
 function NotFoundComponent() {
   return (
@@ -152,12 +152,7 @@ function OnboardingGate() {
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-background pb-24">
         <Outlet />
       </div>
-      {!hideChrome && (
-        <>
-          <ThemePicker />
-          <BottomTabBar />
-        </>
-      )}
+      {!hideChrome && <BottomTabBar />}
     </>
   );
 }
