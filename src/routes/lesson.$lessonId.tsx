@@ -167,17 +167,21 @@ function LessonPage() {
 
       {recorder.error ? <MicPermissionAlert error={recorder.error} /> : null}
 
-      {recorder.state === "recording" && recorder.interim ? (
-        <div className="rounded-xl border border-primary/30 bg-primary/5 p-3 text-sm text-muted-foreground">
-          <span className="mr-2 text-xs font-semibold uppercase tracking-widest text-primary">
-            Hearing
-          </span>
-          {recorder.interim}
+      {recorder.state === "recording" ? (
+        <div className="flex items-center justify-center rounded-xl border border-destructive/40 bg-destructive/10 p-3 text-sm font-medium text-destructive">
+          <span className="mr-2 inline-flex h-2 w-2 animate-pulse rounded-full bg-destructive" />
+          Recording — tap the mic to stop.
+        </div>
+      ) : null}
+
+      {recorder.state === "processing" ? (
+        <div className="rounded-xl border border-primary/30 bg-primary/5 p-3 text-center text-sm text-muted-foreground">
+          Scoring your pronunciation…
         </div>
       ) : null}
 
       {recorder.score && recorder.result ? (
-        <ScoreCard score={recorder.score} transcript={recorder.result.transcript} />
+        <MetricsBreakdown score={recorder.score} transcript={recorder.result.transcript} />
       ) : null}
 
       {savedNote ? (
