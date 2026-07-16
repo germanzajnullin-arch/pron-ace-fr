@@ -124,6 +124,31 @@ function ProgressPage() {
       <p className="text-center text-xs text-muted-foreground">
         Sign in on the Practice tab to sync real attempts across devices.
       </p>
+
+      {/* Dev-only: reset onboarding to re-test the quiz flow */}
+      <section className="rounded-3xl border border-dashed border-border/60 bg-surface/60 p-4">
+        <div className="flex items-start gap-3">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent/15 text-accent">
+            <RotateCcw className="h-4 w-4" aria-hidden />
+          </span>
+          <div className="flex-1">
+            <p className="text-sm font-semibold">Reset onboarding quiz</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Dev helper — clears your local onboarding flag and re-opens the quiz.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              resetOnboarding();
+              router.navigate({ to: "/onboarding" });
+            }}
+            className="shrink-0 rounded-full border border-border bg-background px-3 py-2 text-xs font-semibold transition-colors hover:bg-surface-2 active:scale-95"
+          >
+            Reset
+          </button>
+        </div>
+      </section>
     </main>
   );
 }
