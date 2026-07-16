@@ -52,24 +52,36 @@ export type Database = {
       }
       profiles: {
         Row: {
+          audio_challenge_answer: string | null
           created_at: string
           daily_goal_minutes: number
           display_name: string | null
+          goal: string | null
           id: string
+          onboarding_completed: boolean
+          pain_point: string | null
           updated_at: string
         }
         Insert: {
+          audio_challenge_answer?: string | null
           created_at?: string
           daily_goal_minutes?: number
           display_name?: string | null
+          goal?: string | null
           id: string
+          onboarding_completed?: boolean
+          pain_point?: string | null
           updated_at?: string
         }
         Update: {
+          audio_challenge_answer?: string | null
           created_at?: string
           daily_goal_minutes?: number
           display_name?: string | null
+          goal?: string | null
           id?: string
+          onboarding_completed?: boolean
+          pain_point?: string | null
           updated_at?: string
         }
         Relationships: []

@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TodayRouteImport } from './routes/today'
 import { Route as ProgressRouteImport } from './routes/progress'
 import { Route as PracticeRouteImport } from './routes/practice'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as CustomTextRouteImport } from './routes/custom-text'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AiChatRouteImport } from './routes/ai-chat'
@@ -32,6 +33,11 @@ const ProgressRoute = ProgressRouteImport.update({
 const PracticeRoute = PracticeRouteImport.update({
   id: '/practice',
   path: '/practice',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CustomTextRoute = CustomTextRouteImport.update({
@@ -70,6 +76,7 @@ export interface FileRoutesByFullPath {
   '/ai-chat': typeof AiChatRoute
   '/auth': typeof AuthRoute
   '/custom-text': typeof CustomTextRoute
+  '/onboarding': typeof OnboardingRoute
   '/practice': typeof PracticeRoute
   '/progress': typeof ProgressRoute
   '/today': typeof TodayRoute
@@ -81,6 +88,7 @@ export interface FileRoutesByTo {
   '/ai-chat': typeof AiChatRoute
   '/auth': typeof AuthRoute
   '/custom-text': typeof CustomTextRoute
+  '/onboarding': typeof OnboardingRoute
   '/practice': typeof PracticeRoute
   '/progress': typeof ProgressRoute
   '/today': typeof TodayRoute
@@ -93,6 +101,7 @@ export interface FileRoutesById {
   '/ai-chat': typeof AiChatRoute
   '/auth': typeof AuthRoute
   '/custom-text': typeof CustomTextRoute
+  '/onboarding': typeof OnboardingRoute
   '/practice': typeof PracticeRoute
   '/progress': typeof ProgressRoute
   '/today': typeof TodayRoute
@@ -106,6 +115,7 @@ export interface FileRouteTypes {
     | '/ai-chat'
     | '/auth'
     | '/custom-text'
+    | '/onboarding'
     | '/practice'
     | '/progress'
     | '/today'
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/ai-chat'
     | '/auth'
     | '/custom-text'
+    | '/onboarding'
     | '/practice'
     | '/progress'
     | '/today'
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/ai-chat'
     | '/auth'
     | '/custom-text'
+    | '/onboarding'
     | '/practice'
     | '/progress'
     | '/today'
@@ -140,6 +152,7 @@ export interface RootRouteChildren {
   AiChatRoute: typeof AiChatRoute
   AuthRoute: typeof AuthRoute
   CustomTextRoute: typeof CustomTextRoute
+  OnboardingRoute: typeof OnboardingRoute
   PracticeRoute: typeof PracticeRoute
   ProgressRoute: typeof ProgressRoute
   TodayRoute: typeof TodayRoute
@@ -168,6 +181,13 @@ declare module '@tanstack/react-router' {
       path: '/practice'
       fullPath: '/practice'
       preLoaderRoute: typeof PracticeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/custom-text': {
@@ -220,6 +240,7 @@ const rootRouteChildren: RootRouteChildren = {
   AiChatRoute: AiChatRoute,
   AuthRoute: AuthRoute,
   CustomTextRoute: CustomTextRoute,
+  OnboardingRoute: OnboardingRoute,
   PracticeRoute: PracticeRoute,
   ProgressRoute: ProgressRoute,
   TodayRoute: TodayRoute,
