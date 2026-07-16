@@ -7,6 +7,7 @@ import {
   type OnboardingAnswers,
 } from "@/lib/personalization";
 import { setOnboardingCompleted, isOnboardingCompleted } from "@/lib/onboarding";
+import { readGuestAttempts, clearGuestAttempts } from "@/lib/guest-attempts";
 import { createLogger } from "@/services/logger";
 import type { Database } from "@/integrations/supabase/types";
 
