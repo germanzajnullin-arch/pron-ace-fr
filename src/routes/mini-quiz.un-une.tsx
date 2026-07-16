@@ -51,11 +51,11 @@ function UnUneQuizPage() {
   useEffect(() => {
     if (!current || finished) return;
     tts.speak(current.phrase);
-    return () => tts.cancel();
+    return () => tts.stop();
   }, [current, finished, tts]);
 
   const exit = () => {
-    tts.cancel();
+    tts.stop();
     void navigate({ to: "/daily-focus" });
   };
 
