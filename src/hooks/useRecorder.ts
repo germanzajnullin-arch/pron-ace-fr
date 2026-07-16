@@ -114,7 +114,10 @@ export const useRecorder = ({
   }, [cleanup]);
 
   const scoreOnServer = useCallback(
-    async (blob: Blob, durationMs: number): Promise<ScoreBreakdown> => {
+    async (
+      blob: Blob,
+      durationMs: number,
+    ): Promise<{ breakdown: ScoreBreakdown; transcript: string }> => {
       const form = new FormData();
       form.append("file", blob, "recording.wav");
       form.append("expected_text", expectedRef.current);
@@ -140,7 +143,14 @@ export const useRecorder = ({
       }
 
       const payload = (await response.json()) as ApiResponse;
-      return {
+      // Recompute locally so we get the word-level diff for the UI without
+      // shipping it over the wire.
+      const localForDiff = computePronunciationMetrics({
+        expected: expectedRef.current,
+        heard: payload.transcript,
+        durationMs,
+      });
+      const breakdown: ScoreBreakdown = {
         score: payload.overall,
         overall: payload.overall,
         accuracy: payload.accuracy,
@@ -148,13 +158,9 @@ export const useRecorder = ({
         completeness: payload.completeness,
         bucket: payload.bucket,
         message: payload.message,
-        // Diff is a UI concern — rebuild it locally from the transcript.
-        diff: computePronunciationMetrics({
-          expected: expectedRef.current,
-          heard: payload.transcript,
-          durationMs,
-        }).diff,
+        diff: localForDiff.diff,
       };
+      return { breakdown, transcript: payload.transcript };
     },
     [],
   );
