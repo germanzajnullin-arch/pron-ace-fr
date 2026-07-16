@@ -1,12 +1,22 @@
 import { createFileRoute, useNavigate, type LinkOptions } from "@tanstack/react-router";
-import { useState, type ReactNode } from "react";
-import { Ear, Mic2, MessageCircle, Check, ChevronRight, Lightbulb, Target } from "lucide-react";
+import { useRef, useState, type ReactNode } from "react";
+import { Ear, Mic2, MessageCircle, Check, ChevronRight, Lightbulb, Target, Mic, Square, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
 import { APP_NAME } from "@/config/constants";
 import { DAILY_FOCUS } from "@/config/dailyFocus";
 import { ThemeSwitcher } from "@/components/theme/ThemeSwitcher";
 import { MOCK_RECENT_ATTEMPTS } from "@/config/mockData";
 import { usePersonalization, LEVEL_PHRASE, GOAL_LABEL } from "@/lib/personalization";
+import { useRecorder } from "@/hooks/useRecorder";
+import { useAuthSession } from "@/hooks/useAuthSession";
+import { saveAttempt } from "@/lib/attempts.functions";
+import { pushGuestAttempt } from "@/lib/guest-attempts";
+import { MicPermissionAlert } from "@/components/feedback/MicPermissionAlert";
+import { createLogger } from "@/services/logger";
 import { cn } from "@/lib/utils";
+
+const log = createLogger("DailyFocus");
 
 export const Route = createFileRoute("/daily-focus")({
   head: () => ({
