@@ -91,6 +91,9 @@ export const useAnswersSync = (): void => {
                 transcript: a.transcript,
                 score: a.score,
                 duration_ms: a.durationMs,
+                accuracy_score: a.accuracyScore,
+                fluency_score: a.fluencyScore,
+                completeness_score: a.completenessScore,
               })),
             );
           if (attemptsError) {

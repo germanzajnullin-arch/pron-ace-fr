@@ -12,7 +12,7 @@ import { useRecorder } from "@/hooks/useRecorder";
 import { useAuthSession } from "@/hooks/useAuthSession";
 import { PhraseDisplay } from "@/components/lesson/PhraseDisplay";
 import { RecordButton } from "@/components/lesson/RecordButton";
-import { ScoreCard } from "@/components/lesson/ScoreCard";
+import { MetricsBreakdown } from "@/components/lesson/MetricsBreakdown";
 import { MicPermissionAlert } from "@/components/feedback/MicPermissionAlert";
 import { SkeletonBlock } from "@/components/feedback/SkeletonBlock";
 import { APP_NAME } from "@/config/constants";
@@ -80,6 +80,9 @@ function LessonPage() {
             expectedText: lesson.frenchText,
             transcript: result.transcript,
             score: score.score,
+            accuracyScore: score.accuracy,
+            fluencyScore: score.fluency,
+            completenessScore: score.completeness,
             durationMs: result.durationMs,
             createdAt: new Date().toISOString(),
           });
@@ -108,12 +111,18 @@ function LessonPage() {
             transcript: result.transcript,
             score: score.score,
             durationMs: result.durationMs,
+            accuracyScore: score.accuracy,
+            fluencyScore: score.fluency,
+            completenessScore: score.completeness,
           },
         });
         setSavedNote("Attempt saved to your progress.");
       } catch (err) {
         log.error("save failed", err);
-        setSavedNote("Couldn't save this attempt — try again in a moment.");
+        toast.error("Couldn't save this attempt", {
+          description: "Try again in a moment — your recording is still shown below.",
+        });
+        setSavedNote(null);
       }
     },
   });
@@ -158,17 +167,21 @@ function LessonPage() {
 
       {recorder.error ? <MicPermissionAlert error={recorder.error} /> : null}
 
-      {recorder.state === "recording" && recorder.interim ? (
-        <div className="rounded-xl border border-primary/30 bg-primary/5 p-3 text-sm text-muted-foreground">
-          <span className="mr-2 text-xs font-semibold uppercase tracking-widest text-primary">
-            Hearing
-          </span>
-          {recorder.interim}
+      {recorder.state === "recording" ? (
+        <div className="flex items-center justify-center rounded-xl border border-destructive/40 bg-destructive/10 p-3 text-sm font-medium text-destructive">
+          <span className="mr-2 inline-flex h-2 w-2 animate-pulse rounded-full bg-destructive" />
+          Recording — tap the mic to stop.
+        </div>
+      ) : null}
+
+      {recorder.state === "processing" ? (
+        <div className="rounded-xl border border-primary/30 bg-primary/5 p-3 text-center text-sm text-muted-foreground">
+          Scoring your pronunciation…
         </div>
       ) : null}
 
       {recorder.score && recorder.result ? (
-        <ScoreCard score={recorder.score} transcript={recorder.result.transcript} />
+        <MetricsBreakdown score={recorder.score} transcript={recorder.result.transcript} />
       ) : null}
 
       {savedNote ? (

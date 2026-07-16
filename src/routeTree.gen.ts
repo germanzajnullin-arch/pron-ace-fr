@@ -20,6 +20,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ModuleModuleIdRouteImport } from './routes/module.$moduleId'
 import { Route as MiniQuizUnUneRouteImport } from './routes/mini-quiz.un-une'
 import { Route as LessonLessonIdRouteImport } from './routes/lesson.$lessonId'
+import { Route as ApiPronunciationRouteImport } from './routes/api/pronunciation'
 
 const ProgressRoute = ProgressRouteImport.update({
   id: '/progress',
@@ -76,6 +77,11 @@ const LessonLessonIdRoute = LessonLessonIdRouteImport.update({
   path: '/lesson/$lessonId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPronunciationRoute = ApiPronunciationRouteImport.update({
+  id: '/api/pronunciation',
+  path: '/api/pronunciation',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -86,6 +92,7 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof OnboardingRoute
   '/practice': typeof PracticeRoute
   '/progress': typeof ProgressRoute
+  '/api/pronunciation': typeof ApiPronunciationRoute
   '/lesson/$lessonId': typeof LessonLessonIdRoute
   '/mini-quiz/un-une': typeof MiniQuizUnUneRoute
   '/module/$moduleId': typeof ModuleModuleIdRoute
@@ -99,6 +106,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingRoute
   '/practice': typeof PracticeRoute
   '/progress': typeof ProgressRoute
+  '/api/pronunciation': typeof ApiPronunciationRoute
   '/lesson/$lessonId': typeof LessonLessonIdRoute
   '/mini-quiz/un-une': typeof MiniQuizUnUneRoute
   '/module/$moduleId': typeof ModuleModuleIdRoute
@@ -113,6 +121,7 @@ export interface FileRoutesById {
   '/onboarding': typeof OnboardingRoute
   '/practice': typeof PracticeRoute
   '/progress': typeof ProgressRoute
+  '/api/pronunciation': typeof ApiPronunciationRoute
   '/lesson/$lessonId': typeof LessonLessonIdRoute
   '/mini-quiz/un-une': typeof MiniQuizUnUneRoute
   '/module/$moduleId': typeof ModuleModuleIdRoute
@@ -128,6 +137,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/practice'
     | '/progress'
+    | '/api/pronunciation'
     | '/lesson/$lessonId'
     | '/mini-quiz/un-une'
     | '/module/$moduleId'
@@ -141,6 +151,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/practice'
     | '/progress'
+    | '/api/pronunciation'
     | '/lesson/$lessonId'
     | '/mini-quiz/un-une'
     | '/module/$moduleId'
@@ -154,6 +165,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/practice'
     | '/progress'
+    | '/api/pronunciation'
     | '/lesson/$lessonId'
     | '/mini-quiz/un-une'
     | '/module/$moduleId'
@@ -168,6 +180,7 @@ export interface RootRouteChildren {
   OnboardingRoute: typeof OnboardingRoute
   PracticeRoute: typeof PracticeRoute
   ProgressRoute: typeof ProgressRoute
+  ApiPronunciationRoute: typeof ApiPronunciationRoute
   LessonLessonIdRoute: typeof LessonLessonIdRoute
   MiniQuizUnUneRoute: typeof MiniQuizUnUneRoute
   ModuleModuleIdRoute: typeof ModuleModuleIdRoute
@@ -252,6 +265,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LessonLessonIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/pronunciation': {
+      id: '/api/pronunciation'
+      path: '/api/pronunciation'
+      fullPath: '/api/pronunciation'
+      preLoaderRoute: typeof ApiPronunciationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -264,6 +284,7 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingRoute: OnboardingRoute,
   PracticeRoute: PracticeRoute,
   ProgressRoute: ProgressRoute,
+  ApiPronunciationRoute: ApiPronunciationRoute,
   LessonLessonIdRoute: LessonLessonIdRoute,
   MiniQuizUnUneRoute: MiniQuizUnUneRoute,
   ModuleModuleIdRoute: ModuleModuleIdRoute,
