@@ -159,9 +159,13 @@ function OnboardingGate() {
 
   useEffect(() => {
     if (loading) return;
-    if (!localCompleted && !!session && !!profile && profile.onboarding_completed) {
-      // Signed-in user with a completed DB flag: mirror it locally.
-      // (The useEffect in onboarding.tsx also handles this on that route.)
+    // Signed-in user with completed onboarding in DB → mirror locally so the
+    // gate doesn't force them back through the quiz on a clean browser.
+    if (!!session && !!profile && profile.onboarding_completed) {
+      if (!localCompleted) {
+        setOnboardingCompleted(true);
+        setLocalCompleted(true);
+      }
       return;
     }
     if (needsOnboarding && !isPublic) {
