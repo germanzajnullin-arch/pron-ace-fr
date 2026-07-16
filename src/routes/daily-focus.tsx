@@ -296,3 +296,143 @@ function buildSmartTip(): string {
 function truncate(s: string, n = 32): string {
   return s.length <= n ? s : `${s.slice(0, n - 1)}…`;
 }
+
+function TodaysPhraseCard({
+  french,
+  translation,
+  level,
+}: {
+  french: string;
+  translation: string;
+  level: string;
+}) {
+  const { session } = useAuthSession();
+  const save = useServerFn(saveAttempt);
+  const guestPromptShown = useRef(false);
+  const [status, setStatus] = useState<string | null>(null);
+
+  const recorder = useRecorder({
+    expectedText: french,
+    onScored: async (result, score) => {
+      const pct = Math.round(score.score * 100);
+      if (!session) {
+        try {
+          pushGuestAttempt({
+            lessonId: null,
+            expectedText: french,
+            transcript: result.transcript,
+            score: score.score,
+            durationMs: result.durationMs,
+            createdAt: new Date().toISOString(),
+          });
+        } catch (err) {
+          log.error("guest cache failed", err);
+        }
+        setStatus(`Scored ${pct}% — saved on this device.`);
+        if (!guestPromptShown.current) {
+          guestPromptShown.current = true;
+          toast("Nice attempt!", {
+            description:
+              "Sign in now to save your progress and unlock advanced analytics.",
+            action: { label: "Sign in", onClick: () => { window.location.href = "/auth"; } },
+          });
+        }
+        return;
+      }
+      try {
+        await save({
+          data: {
+            lessonId: null,
+            expectedText: french,
+            transcript: result.transcript,
+            score: score.score,
+            durationMs: result.durationMs,
+          },
+        });
+        setStatus(`Scored ${pct}% — saved to your progress.`);
+      } catch (err) {
+        log.error("save failed", err);
+        setStatus("Couldn't save — try again in a moment.");
+      }
+    },
+  });
+
+  const isRecording = recorder.state === "recording";
+  const isBusy = recorder.state === "requesting" || recorder.state === "processing";
+  const canReset = recorder.state === "scored" || recorder.state === "error";
+
+  const handleClick = () => {
+    if (isBusy) return;
+    if (isRecording) return recorder.stop();
+    if (canReset) {
+      setStatus(null);
+      recorder.reset();
+      void recorder.start();
+      return;
+    }
+    void recorder.start();
+  };
+
+  return (
+    <section
+      aria-label="Today's target phrase"
+      className="rounded-2xl border border-border/60 bg-surface p-4"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+            Today's phrase · {level}
+          </p>
+          <p className="mt-1 text-xl font-bold leading-snug">{french}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{translation}</p>
+        </div>
+        <button
+          type="button"
+          onClick={handleClick}
+          disabled={isBusy}
+          aria-label={
+            isRecording
+              ? "Stop recording"
+              : canReset
+                ? "Record again"
+                : "Record your pronunciation"
+          }
+          className={cn(
+            "flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-primary-foreground transition-all",
+            "disabled:cursor-not-allowed disabled:opacity-60",
+            isRecording
+              ? "bg-destructive shadow-neon animate-pulse-neon"
+              : "bg-gradient-neon shadow-neon active:scale-95",
+          )}
+        >
+          {isBusy ? (
+            <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
+          ) : isRecording ? (
+            <Square className="h-5 w-5" aria-hidden fill="currentColor" />
+          ) : (
+            <Mic className="h-5 w-5" aria-hidden />
+          )}
+        </button>
+      </div>
+
+      {recorder.error ? (
+        <div className="mt-3">
+          <MicPermissionAlert error={recorder.error} />
+        </div>
+      ) : null}
+
+      {recorder.state === "recording" && recorder.interim ? (
+        <p className="mt-3 text-xs text-muted-foreground">
+          <span className="mr-1 font-semibold uppercase tracking-widest text-primary">
+            Hearing
+          </span>
+          {recorder.interim}
+        </p>
+      ) : null}
+
+      {status ? (
+        <p className="mt-3 text-xs text-muted-foreground">{status}</p>
+      ) : null}
+    </section>
+  );
+}
