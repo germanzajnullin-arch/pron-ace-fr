@@ -16,7 +16,7 @@ import { BottomTabBar } from "@/components/nav/BottomTabBar";
 import { APP_NAME } from "@/config/constants";
 import { useProfile } from "@/hooks/useProfile";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import { ThemePicker } from "@/components/theme/ThemePicker";
+
 
 function NotFoundComponent() {
   return (
