@@ -125,15 +125,6 @@ function DailyFocusPage() {
           >
             Today's plan
           </h2>
-
-      <section aria-labelledby="daily-tasks-heading" className="space-y-3">
-        <div className="flex items-baseline justify-between px-1">
-          <h2
-            id="daily-tasks-heading"
-            className="text-sm font-semibold uppercase tracking-widest text-muted-foreground"
-          >
-            Today's plan
-          </h2>
           <span className="text-xs font-medium tabular-nums text-muted-foreground">
             {completedCount} / {ACTIONS.length}
           </span>
