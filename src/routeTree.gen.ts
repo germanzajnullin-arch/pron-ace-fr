@@ -18,6 +18,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AiChatRouteImport } from './routes/ai-chat'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ModuleModuleIdRouteImport } from './routes/module.$moduleId'
+import { Route as MiniQuizUnUneRouteImport } from './routes/mini-quiz.un-une'
 import { Route as LessonLessonIdRouteImport } from './routes/lesson.$lessonId'
 
 const ProgressRoute = ProgressRouteImport.update({
@@ -65,6 +66,11 @@ const ModuleModuleIdRoute = ModuleModuleIdRouteImport.update({
   path: '/module/$moduleId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MiniQuizUnUneRoute = MiniQuizUnUneRouteImport.update({
+  id: '/mini-quiz/un-une',
+  path: '/mini-quiz/un-une',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LessonLessonIdRoute = LessonLessonIdRouteImport.update({
   id: '/lesson/$lessonId',
   path: '/lesson/$lessonId',
@@ -81,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/practice': typeof PracticeRoute
   '/progress': typeof ProgressRoute
   '/lesson/$lessonId': typeof LessonLessonIdRoute
+  '/mini-quiz/un-une': typeof MiniQuizUnUneRoute
   '/module/$moduleId': typeof ModuleModuleIdRoute
 }
 export interface FileRoutesByTo {
@@ -93,6 +100,7 @@ export interface FileRoutesByTo {
   '/practice': typeof PracticeRoute
   '/progress': typeof ProgressRoute
   '/lesson/$lessonId': typeof LessonLessonIdRoute
+  '/mini-quiz/un-une': typeof MiniQuizUnUneRoute
   '/module/$moduleId': typeof ModuleModuleIdRoute
 }
 export interface FileRoutesById {
@@ -106,6 +114,7 @@ export interface FileRoutesById {
   '/practice': typeof PracticeRoute
   '/progress': typeof ProgressRoute
   '/lesson/$lessonId': typeof LessonLessonIdRoute
+  '/mini-quiz/un-une': typeof MiniQuizUnUneRoute
   '/module/$moduleId': typeof ModuleModuleIdRoute
 }
 export interface FileRouteTypes {
@@ -120,6 +129,7 @@ export interface FileRouteTypes {
     | '/practice'
     | '/progress'
     | '/lesson/$lessonId'
+    | '/mini-quiz/un-une'
     | '/module/$moduleId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -132,6 +142,7 @@ export interface FileRouteTypes {
     | '/practice'
     | '/progress'
     | '/lesson/$lessonId'
+    | '/mini-quiz/un-une'
     | '/module/$moduleId'
   id:
     | '__root__'
@@ -144,6 +155,7 @@ export interface FileRouteTypes {
     | '/practice'
     | '/progress'
     | '/lesson/$lessonId'
+    | '/mini-quiz/un-une'
     | '/module/$moduleId'
   fileRoutesById: FileRoutesById
 }
@@ -157,6 +169,7 @@ export interface RootRouteChildren {
   PracticeRoute: typeof PracticeRoute
   ProgressRoute: typeof ProgressRoute
   LessonLessonIdRoute: typeof LessonLessonIdRoute
+  MiniQuizUnUneRoute: typeof MiniQuizUnUneRoute
   ModuleModuleIdRoute: typeof ModuleModuleIdRoute
 }
 
@@ -225,6 +238,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ModuleModuleIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mini-quiz/un-une': {
+      id: '/mini-quiz/un-une'
+      path: '/mini-quiz/un-une'
+      fullPath: '/mini-quiz/un-une'
+      preLoaderRoute: typeof MiniQuizUnUneRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lesson/$lessonId': {
       id: '/lesson/$lessonId'
       path: '/lesson/$lessonId'
@@ -245,6 +265,7 @@ const rootRouteChildren: RootRouteChildren = {
   PracticeRoute: PracticeRoute,
   ProgressRoute: ProgressRoute,
   LessonLessonIdRoute: LessonLessonIdRoute,
+  MiniQuizUnUneRoute: MiniQuizUnUneRoute,
   ModuleModuleIdRoute: ModuleModuleIdRoute,
 }
 export const routeTree = rootRouteImport
