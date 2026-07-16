@@ -350,12 +350,17 @@ function TodaysPhraseCard({
             transcript: result.transcript,
             score: score.score,
             durationMs: result.durationMs,
+            accuracyScore: score.accuracy,
+            fluencyScore: score.fluency,
+            completenessScore: score.completeness,
           },
         });
         setStatus(`Scored ${pct}% — saved to your progress.`);
       } catch (err) {
         log.error("save failed", err);
-        setStatus("Couldn't save — try again in a moment.");
+        toast.error("Couldn't save this attempt", {
+          description: "Try again in a moment.",
+        });
       }
     },
   });
