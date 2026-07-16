@@ -118,7 +118,7 @@ function OnboardingPage() {
       .from("profiles")
       .update({
         goal,
-        french_level: level,
+        french_level: level ?? "A1",
         pain_point: painPoint,
         audio_challenge_answer: audioAnswer,
         daily_goal_minutes: Number(target),
