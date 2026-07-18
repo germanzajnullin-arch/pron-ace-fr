@@ -61,10 +61,10 @@
   --popover: oklch(0.22 0.03 278);
   --popover-foreground: oklch(0.97 0.01 260);
 
-  /* Neon green — primary CTA / active state */
-  --primary: oklch(0.85 0.22 145);
-  --primary-foreground: oklch(0.14 0.03 145);
-  --primary-glow: oklch(0.92 0.2 148);
+  /* Dark neon — deep blue primary CTA */
+  --primary: oklch(0.55 0.22 265);
+  --primary-foreground: oklch(0.98 0.01 260);
+  --primary-glow: oklch(0.68 0.20 265);
 
   /* Neon purple — accent / secondary highlights */
   --accent: oklch(0.68 0.24 300);
@@ -83,9 +83,9 @@
 
   --border: oklch(1 0 0 / 8%);
   --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.85 0.22 145);
+  --ring: oklch(0.55 0.22 265);
 
-  --shadow-neon: 0 10px 40px -12px oklch(0.85 0.22 145 / 0.5);
+  --shadow-neon: 0 10px 40px -12px oklch(0.55 0.22 265 / 0.5);
   --shadow-accent: 0 10px 40px -12px oklch(0.68 0.24 300 / 0.5);
   --shadow-elevated: 0 12px 30px -8px oklch(0.05 0 0 / 0.6);
 }
@@ -101,9 +101,9 @@
   --popover: oklch(0.24 0.07 250);
   --popover-foreground: oklch(0.97 0.02 230);
 
-  --primary: oklch(0.82 0.16 210);
-  --primary-foreground: oklch(0.15 0.05 245);
-  --primary-glow: oklch(0.88 0.14 205);
+  --primary: oklch(0.98 0.005 240);
+  --primary-foreground: oklch(0.18 0.06 250);
+  --primary-glow: oklch(1 0 0);
 
   --accent: oklch(0.55 0.22 265);
   --accent-foreground: oklch(0.98 0.02 240);
@@ -116,9 +116,9 @@
 
   --border: oklch(1 0 0 / 8%);
   --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.82 0.16 210);
+  --ring: oklch(0.98 0.005 240);
 
-  --shadow-neon: 0 10px 40px -12px oklch(0.82 0.16 210 / 0.5);
+  --shadow-neon: 0 10px 40px -12px oklch(1 0 0 / 0.35);
   --shadow-accent: 0 10px 40px -12px oklch(0.55 0.22 265 / 0.55);
   --shadow-elevated: 0 12px 30px -8px oklch(0.05 0 0 / 0.6);
 }
@@ -135,9 +135,9 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.18 0.02 265);
 
-  --primary: oklch(0.42 0.20 275);
+  --primary: oklch(0.55 0.22 250);
   --primary-foreground: oklch(0.99 0.005 260);
-  --primary-glow: oklch(0.55 0.22 275);
+  --primary-glow: oklch(0.68 0.20 250);
 
   --accent: oklch(0.55 0.22 300);
   --accent-foreground: oklch(0.99 0.005 260);
@@ -150,9 +150,9 @@
 
   --border: oklch(0.18 0.02 265 / 12%);
   --input: oklch(0.18 0.02 265 / 16%);
-  --ring: oklch(0.42 0.20 275);
+  --ring: oklch(0.55 0.22 250);
 
-  --shadow-neon: 0 10px 30px -12px oklch(0.42 0.20 275 / 0.35);
+  --shadow-neon: 0 10px 30px -12px oklch(0.55 0.22 250 / 0.35);
   --shadow-accent: 0 10px 30px -12px oklch(0.55 0.22 300 / 0.35);
   --shadow-elevated: 0 12px 30px -12px oklch(0.18 0.02 265 / 0.18);
 }
