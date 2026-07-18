@@ -10,7 +10,7 @@ import {
 } from "@/hooks/useProfile";
 import { APP_NAME } from "@/config/constants";
 import { cn } from "@/lib/utils";
-import { setOnboardingCompleted } from "@/lib/onboarding";
+import { setOnboardingCompleted, isOnboardingCompleted } from "@/lib/onboarding";
 import { writeLocalAnswers, type OnboardingAnswers } from "@/lib/personalization";
 
 export const Route = createFileRoute("/onboarding")({
