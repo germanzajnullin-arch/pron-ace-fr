@@ -116,9 +116,9 @@
 
   --border: oklch(1 0 0 / 8%);
   --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.82 0.16 210);
+  --ring: oklch(0.98 0.005 240);
 
-  --shadow-neon: 0 10px 40px -12px oklch(0.82 0.16 210 / 0.5);
+  --shadow-neon: 0 10px 40px -12px oklch(1 0 0 / 0.35);
   --shadow-accent: 0 10px 40px -12px oklch(0.55 0.22 265 / 0.55);
   --shadow-elevated: 0 12px 30px -8px oklch(0.05 0 0 / 0.6);
 }
