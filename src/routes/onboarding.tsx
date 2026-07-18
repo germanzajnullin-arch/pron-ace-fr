@@ -135,7 +135,7 @@ function OnboardingPage() {
     if (from < 4) scheduleAdvance((from + 1) as StepId);
   };
 
-  const handleNext = async () => {
+  const handleNext = () => {
     if (!canProceed) return;
     if (step < 4) {
       setStep((s) => (s + 1) as StepId);
@@ -144,29 +144,39 @@ function OnboardingPage() {
     setSubmitting(true);
     setError(null);
 
-    writeLocalAnswers(buildAnswers());
-
-    if (session?.user) {
-      const { error: updateError } = await supabase
-        .from("profiles")
-        .update({
-          goal,
-          french_level: level ?? "A1",
-          pain_point: painPoint,
-          audio_challenge_answer: audioAnswer,
-          daily_goal_minutes: Number(target),
-          onboarding_completed: true,
-        })
-        .eq("id", session.user.id);
-      if (updateError) {
-        setError(updateError.message);
-        setSubmitting(false);
-        return;
-      }
-      await refetch();
+    try {
+      writeLocalAnswers(buildAnswers());
+    } catch {
+      /* noop */
     }
 
+    // Mark completion + navigate immediately. Never block UI on the network.
     setOnboardingCompleted(true);
+
+    // Fire-and-forget Supabase sync; failures fall back to localStorage.
+    if (session?.user) {
+      const userId = session.user.id;
+      void (async () => {
+        try {
+          const { error: updateError } = await supabase
+            .from("profiles")
+            .update({
+              goal,
+              french_level: level ?? "A1",
+              pain_point: painPoint,
+              audio_challenge_answer: audioAnswer,
+              daily_goal_minutes: Number(target),
+              onboarding_completed: true,
+            })
+            .eq("id", userId);
+          if (updateError) throw updateError;
+          await refetch();
+        } catch (err) {
+          console.error("[onboarding] background profile sync failed", err);
+        }
+      })();
+    }
+
     router.navigate({ to: "/daily-focus" });
   };
 
