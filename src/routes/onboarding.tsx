@@ -10,7 +10,7 @@ import {
 } from "@/hooks/useProfile";
 import { APP_NAME } from "@/config/constants";
 import { cn } from "@/lib/utils";
-import { setOnboardingCompleted } from "@/lib/onboarding";
+import { setOnboardingCompleted, isOnboardingCompleted } from "@/lib/onboarding";
 import { writeLocalAnswers, type OnboardingAnswers } from "@/lib/personalization";
 
 export const Route = createFileRoute("/onboarding")({
@@ -73,10 +73,13 @@ function OnboardingPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Guest-first: never redirect to /auth. If the DB flag is already true, skip ahead.
+  // If onboarding is already completed (locally or in DB), skip the quiz entirely.
   useEffect(() => {
-    if (loading) return;
-    if (profile?.onboarding_completed) {
+    if (isOnboardingCompleted()) {
+      router.navigate({ to: "/daily-focus" });
+      return;
+    }
+    if (!loading && profile?.onboarding_completed) {
       setOnboardingCompleted(true);
       router.navigate({ to: "/daily-focus" });
     }
