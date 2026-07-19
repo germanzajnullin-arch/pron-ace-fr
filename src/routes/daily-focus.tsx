@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { APP_NAME } from "@/config/constants";
 import { DAILY_FOCUS } from "@/config/dailyFocus";
-import { ThemeSwitcher } from "@/components/theme/ThemeSwitcher";
 import { MOCK_RECENT_ATTEMPTS } from "@/config/mockData";
 import { usePersonalization, LEVEL_PHRASE, GOAL_LABEL } from "@/lib/personalization";
 import { useRecorder } from "@/hooks/useRecorder";
