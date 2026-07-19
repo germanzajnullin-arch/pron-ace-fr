@@ -92,27 +92,24 @@ function DailyFocusPage() {
 
   return (
     <main className="flex-1 px-4 pt-8 pb-6 space-y-6">
-      <header className="flex items-start justify-between gap-3">
-        <div className="space-y-1">
-          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-            Daily Focus
-          </p>
-          <h1 className="text-3xl font-bold">
-            Bonne journée <span className="text-gradient-neon">✨</span>
-          </h1>
-          <div className="flex flex-wrap items-center gap-1.5 pt-1">
-            <span className="inline-flex items-center rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
-              Level {french_level}
+      <header className="space-y-1 pr-14">
+        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+          Daily Focus
+        </p>
+        <h1 className="text-3xl font-bold">
+          Bonne journée <span className="text-gradient-neon">✨</span>
+        </h1>
+        <div className="flex flex-wrap items-center gap-1.5 pt-1">
+          <span className="inline-flex items-center rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+            Level {french_level}
+          </span>
+          {goal && (
+            <span className="inline-flex items-center gap-1 rounded-full border border-accent/40 bg-accent/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent">
+              <Target className="h-3 w-3" aria-hidden />
+              {GOAL_LABEL[goal]}
             </span>
-            {goal && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-accent/40 bg-accent/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent">
-                <Target className="h-3 w-3" aria-hidden />
-                {GOAL_LABEL[goal]}
-              </span>
-            )}
-          </div>
+          )}
         </div>
-        <ThemeSwitcher className="mt-1 shrink-0" />
       </header>
 
       <TodaysPhraseCard french={phrase.french} translation={phrase.translation} level={french_level} />
