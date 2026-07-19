@@ -189,6 +189,13 @@ function OnboardingGate() {
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-background pb-24">
         <Outlet />
       </div>
+      {!hideChrome && (
+        <div className="pointer-events-none fixed inset-x-0 top-0 z-30 mx-auto flex w-full max-w-md justify-end px-4 pt-3">
+          <div className="pointer-events-auto">
+            <ThemeSwitcher />
+          </div>
+        </div>
+      )}
       {!hideChrome && <BottomTabBar />}
       <Toaster position="top-center" richColors closeButton />
     </>
