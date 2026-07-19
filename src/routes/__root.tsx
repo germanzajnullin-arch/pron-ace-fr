@@ -13,6 +13,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { BottomTabBar } from "@/components/nav/BottomTabBar";
+import { ThemeSwitcher } from "@/components/theme/ThemeSwitcher";
 import { Toaster } from "@/components/ui/sonner";
 import { APP_NAME } from "@/config/constants";
 import { useProfile } from "@/hooks/useProfile";
@@ -188,6 +189,13 @@ function OnboardingGate() {
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-background pb-24">
         <Outlet />
       </div>
+      {!hideChrome && (
+        <div className="pointer-events-none fixed inset-x-0 top-0 z-30 mx-auto flex w-full max-w-md justify-end px-4 pt-3">
+          <div className="pointer-events-auto">
+            <ThemeSwitcher />
+          </div>
+        </div>
+      )}
       {!hideChrome && <BottomTabBar />}
       <Toaster position="top-center" richColors closeButton />
     </>
