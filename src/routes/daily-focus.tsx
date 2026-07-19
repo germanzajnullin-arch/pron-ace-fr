@@ -410,7 +410,7 @@ function TodaysPhraseCard({
             "disabled:cursor-not-allowed disabled:opacity-60",
             isRecording
               ? "bg-destructive shadow-neon animate-pulse-neon"
-              : "bg-gradient-neon shadow-neon active:scale-95",
+              : "bg-primary shadow-neon active:scale-95",
           )}
         >
           {isBusy ? (
