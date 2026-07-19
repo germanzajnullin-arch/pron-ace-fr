@@ -13,6 +13,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { BottomTabBar } from "@/components/nav/BottomTabBar";
+import { ThemeSwitcher } from "@/components/theme/ThemeSwitcher";
 import { Toaster } from "@/components/ui/sonner";
 import { APP_NAME } from "@/config/constants";
 import { useProfile } from "@/hooks/useProfile";
