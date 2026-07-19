@@ -213,7 +213,7 @@ function DailyActionCard({
           "mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition-all duration-300 active:scale-[0.98]",
           complete
             ? "border border-primary/40 bg-transparent text-primary hover:bg-primary/10"
-            : "bg-gradient-neon text-background shadow-neon",
+            : "bg-primary text-primary-foreground shadow-neon hover:brightness-110",
         )}
       >
         {complete ? "Practice again" : action.cta}
@@ -410,7 +410,7 @@ function TodaysPhraseCard({
             "disabled:cursor-not-allowed disabled:opacity-60",
             isRecording
               ? "bg-destructive shadow-neon animate-pulse-neon"
-              : "bg-gradient-neon shadow-neon active:scale-95",
+              : "bg-primary shadow-neon active:scale-95",
           )}
         >
           {isBusy ? (
